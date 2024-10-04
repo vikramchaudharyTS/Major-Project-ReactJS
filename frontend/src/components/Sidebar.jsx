@@ -13,34 +13,40 @@ function Sidebar() {
     const options = [
         {
             icon: <IoHomeOutline />,
-            optionName: "Dashboard"
+            optionName: "Dashboard",
+            to:'/dashboard'
         },
         {
             icon: <BiSolidBinoculars />,
-            optionName: "Explorer"
+            optionName: "Explorer",
+            to:'/explorer'
         },
         {
             icon: <LuMessagesSquare />,
-            optionName: "Messages"
+            optionName: "Messages",
+            to:'/messages'
         },
         {
             icon: <CgProfile />,
-            optionName: "Profile"
+            optionName: "Profile",
+            to: '/profile'
         },
         {
             icon: <MdNotifications />,
-            optionName: "Notifications"
+            optionName: "Notifications",
+            to:'/notifications'
         },
         {
             icon: <CiSettings />,
-            optionName: "Settings"
+            optionName: "Settings",
+            to:'/settings'
         }
     ]
 
 
   return (
     <>
-        <div className='fixed bg-zinc-800/60 h-[98%] py-5 px-3 mt-2 ml-2 rounded-lg'>
+        <div className='bg-zinc-800/60 h-[98%] py-5 px-3 mt-2 ml-2 rounded-lg'>
             {/* logo and site name */}
             <div>
                 <div>Logo</div>
