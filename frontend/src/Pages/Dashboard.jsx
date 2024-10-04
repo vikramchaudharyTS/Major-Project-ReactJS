@@ -4,7 +4,7 @@ import {Context} from '../contexts/Context'
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import Navbar from '../components/Navbar';
 import Feed from '../components/Feed';
-
+import Notifications from '../components/Notifications';
 
 function Dashboard() {
     const {isActive, setIsActive} = useContext(Context)
@@ -22,8 +22,8 @@ function Dashboard() {
                 <div className='mx-10 w-[49%] h-screen flex flex-col items-center overflow-scroll'>
                     <Feed/>
                 </div>
-                <div className='w-[18%] bg-zinc-600 mr-10'>
-                    sokdm
+                <div className='w-[20%] bg-zinc-600 mr-10'>
+                    <Notifications />
                 </div>
                 <div className='w-[23%] bg-zinc-700'>
                     dfsd

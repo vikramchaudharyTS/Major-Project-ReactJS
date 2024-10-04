@@ -3,7 +3,7 @@ import { createContext, useState } from "react";
 export const Context = createContext()
 
 const ActiveContext = ({children})=>{
-    const [isActive, setIsActive] = useState(false)
+    const [isActive, setIsActive] = useState(true)
 
     return (
         <>
