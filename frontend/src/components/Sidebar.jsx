@@ -9,7 +9,7 @@ import { CiSettings } from "react-icons/ci";
 import SingleButton from './comp/SingleButton';
 import { RiLogoutCircleLine } from "react-icons/ri";
 import SearchBar from './comp/SearchBar';
-
+import { GrFingerPrint } from "react-icons/gr";
 
 function Sidebar() {
     const options = [
@@ -57,9 +57,9 @@ function Sidebar() {
         <div className='bg-zinc-800/60 h-[98%] py-5 px-3 mt-2 ml-2 rounded-lg flex flex-col justify-between'>
             <div>
                 {/* logo and site name */}
-                <div className='flex justify-between items-center mb-8'>
-                    <div>Logo</div>
-                    <h1>Vault</h1>
+                <div className='flex justify-between px-2 items-center mb-8'>
+                    <div className='text-4xl cursor-pointer'><GrFingerPrint /></div>
+                    <h1 className='font-semibold text-xl cursor-pointer'>Vault</h1>
                 </div>
                 <hr className="border-zinc-600 mb-7" />
 

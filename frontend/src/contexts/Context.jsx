@@ -3,8 +3,7 @@ import { createContext, useState } from "react";
 export const Context = createContext()
 
 const ActiveContext = ({children})=>{
-    const [isActive, setIsActive] = useState(true)
-    
+
     //messaging user context
     const users = [
         {
@@ -97,7 +96,7 @@ const ActiveContext = ({children})=>{
 
     return (
         <>
-            <Context.Provider value={{isActive, setIsActive, users}}>
+            <Context.Provider value={{users}}>
                 {children}
             </Context.Provider>
         </>
