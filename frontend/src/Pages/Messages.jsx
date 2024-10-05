@@ -26,11 +26,8 @@ function Messages() {
                    <div className='w-[68%] h-[88%] my-24 mr-10 overflow-hidden bg-zinc-700 rounded-lg'>
                     <MessagesBox />
                    </div>
-                  
-                   
                </div>
            </div>
-
            
        </div>
     </>

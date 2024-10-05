@@ -6,12 +6,13 @@ import ProfilePage from "../Pages/ProfilePage";
 import {Routes, Route} from 'react-router-dom'
 import Settings from "../Pages/Settings";
 import Notification from "../Pages/Notification";
-
+import Login from '../Pages/Login'
 
 function Routing(){
     return(
         <Routes>
             <Route path="/" element={<LandingPage />}></Route>
+            <Route path="/login" element={<Login />}></Route>
             <Route path="/dashboard" element={<Dashboard />}></Route>
             <Route path="/messages" element={<Messages />}></Route>
             <Route path="/explorer" element={<Explorer />}></Route>

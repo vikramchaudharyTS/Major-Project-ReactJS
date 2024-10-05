@@ -15,7 +15,7 @@ function MessagesBox() {
             <div className='flex flex-col justify-between h-[100%] w-full'>
 
 
-                <nav className='flex items-center px-5 py-10 justify-between h-16 w-full bg-zinc-800'>
+                <nav className='flex items-center px-5 py-10 justify-between h-16 w-full bg-zinc-900/80'>
                     <div className='flex gap-5'>
                         <div><img className='w-14 h-14 object-cover rounded-full' src="https://images.unsplash.com/photo-1727731160236-046137e01855?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyNnx8fGVufDB8fHx8fA%3D%3D" alt="Img" /></div>
                         <div>
@@ -31,11 +31,11 @@ function MessagesBox() {
                     </div>
                 </nav>
 
-                <div className='flex-1 bg-black/70 p-4 overflow-y-auto'>
+                <div className='flex-1 bg-black/80 p-4 overflow-y-auto'>
                     <div className='text-white'>space</div>
                 </div>
 
-                <div className='flex items-center px-4 h-16 bg-zinc-800'>
+                <div className='flex items-center px-4 h-16 bbg-zinc-900/80'>
                     <BsEmojiLaughing className='text-xl z-100' />
                     <input type='text' className='w-[98%] h-10 px-4 rounded-md bg-transparent text-white outline-none' placeholder='Type a message...' />
                     <div className='flex gap-5 text-xl'>

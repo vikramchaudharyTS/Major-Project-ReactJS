@@ -32,7 +32,7 @@ function Notifications() {
     }
   ]
 
-  const [isActiveNotification, setIsActiveNotification] = useState(false)
+  const [isActiveNotification, setIsActiveNotification] = useState(true)
 
   return (
     <>

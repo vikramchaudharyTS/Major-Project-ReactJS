@@ -1,5 +1,4 @@
 import React from 'react'
-import Test from './Test'
 import Routing from './utils/Routing'
 
 function App() {
