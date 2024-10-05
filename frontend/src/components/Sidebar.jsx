@@ -6,6 +6,8 @@ import { LuMessagesSquare } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { MdNotifications } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
+import SingleButton from './comp/SingleButton';
+import { RiLogoutCircleLine } from "react-icons/ri";
 
 
 function Sidebar() {
@@ -42,19 +44,33 @@ function Sidebar() {
         }
     ]
 
+    const logout = {
+        icon: <RiLogoutCircleLine />,
+        optionName: "Logout",
+        to:'/logout'
+    }
+
 
   return (
     <>
-        <div className='bg-zinc-800/60 h-[98%] py-5 px-3 mt-2 ml-2 rounded-lg'>
-            {/* logo and site name */}
+        <div className='bg-zinc-800/60 h-[98%] py-5 px-3 mt-2 ml-2 rounded-lg flex flex-col justify-between'>
             <div>
-                <div>Logo</div>
-                <h1>Vault</h1>
+                {/* logo and site name */}
+                <div className='flex justify-between items-center mb-8'>
+                    <div>Logo</div>
+                    <h1>Vault</h1>
+                </div>
+                <hr className="border-zinc-600 mb-10" />
+
+                {/* search */}
+                <div></div>
+                {/* options */}
+                <ThreePartButtons options={options} />
             </div>
-            {/* search */}
-            <div></div>
-            {/* options */}
-            <ThreePartButtons options={options} />
+
+
+            <SingleButton data={logout} />
+            
         </div>
     </>
   )
