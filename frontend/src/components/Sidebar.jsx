@@ -6,8 +6,7 @@ import { LuMessagesSquare } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { MdNotifications } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
-import { LuArrowLeftFromLine } from "react-icons/lu";
-import { Context } from '../contexts/Context';
+
 
 function Sidebar() {
     const options = [

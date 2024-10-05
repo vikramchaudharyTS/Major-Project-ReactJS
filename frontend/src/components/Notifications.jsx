@@ -3,6 +3,7 @@ import NotificationCall from './comp/NotificationCall'
 
 
 function Notifications() {
+  
   const notificationCallData = [
     {
       username: "Vikram",

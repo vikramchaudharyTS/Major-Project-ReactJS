@@ -1,17 +1,15 @@
-import React from 'react'
-import Post from './Post'
+import React, { useState, useEffect } from 'react';
+import Post from './Post';
 
-function Feed() {
+const Feed = () => {
+
   return (
-    <>
-        <div className='mt-24 w-full flex flex-col flex-wrap items-center justify-center gap-7'>
-            <Post />
-            <Post />
-            <Post />
-           
-        </div>
-    </>
-  )
-}
+    <div className='mt-24 w-full flex flex-col flex-wrap items-center justify-center gap-7'>
+      <div className='overflow-y-auto p-4'>
+        <Post />
+      </div>
+    </div>
+  );
+};
 
-export default Feed
+export default Feed;

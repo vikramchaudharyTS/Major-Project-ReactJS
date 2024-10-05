@@ -5,6 +5,8 @@ import { LuArrowLeftFromLine } from "react-icons/lu";
 import Navbar from '../components/Navbar';
 import Feed from '../components/Feed';
 import Notifications from '../components/Notifications';
+import ExtremeRightBar from '../components/ExtremeRightBar';
+
 
 function Dashboard() {
     const {isActive, setIsActive} = useContext(Context)
@@ -25,8 +27,8 @@ function Dashboard() {
                 <div className='w-[20%]  mr-10'>
                     <Notifications />
                 </div>
-                <div className='w-[23%] bg-zinc-700'>
-                    dfsd
+                <div className='w-[23%] h-screen'>
+                    <ExtremeRightBar />
                 </div>
             </div>
         </div>
