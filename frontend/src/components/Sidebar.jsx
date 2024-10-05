@@ -8,6 +8,7 @@ import { MdNotifications } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
 import SingleButton from './comp/SingleButton';
 import { RiLogoutCircleLine } from "react-icons/ri";
+import SearchBar from './comp/SearchBar';
 
 
 function Sidebar() {
@@ -60,10 +61,10 @@ function Sidebar() {
                     <div>Logo</div>
                     <h1>Vault</h1>
                 </div>
-                <hr className="border-zinc-600 mb-10" />
+                <hr className="border-zinc-600 mb-7" />
 
                 {/* search */}
-                <div></div>
+                <div className='mb-7'><SearchBar /></div>
                 {/* options */}
                 <ThreePartButtons options={options} />
             </div>

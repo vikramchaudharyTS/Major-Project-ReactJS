@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import Sidebar from '../components/Sidebar'
-import {Context} from '../contexts/Context'
 import { LuArrowLeftFromLine } from "react-icons/lu";
 import Navbar from '../components/Navbar';
 import Feed from '../components/Feed';
@@ -9,15 +8,13 @@ import ExtremeRightBar from '../components/ExtremeRightBar';
 
 
 function Dashboard() {
-    const {isActive, setIsActive} = useContext(Context)
   return (
     <>
         <Navbar />
         <div className='flex items-center justify-between'>
            
             <div className='w-[13%] h-screen backdrop-blur-sm'>
-                {isActive ? <Sidebar  /> : null}
-                <LuArrowLeftFromLine onClick={()=>setIsActive(!isActive)} className='absolute left-[92%] bottom-[50%] rounded-full bg-zinc-700 p-2 w-8 h-8 cursor-pointer hover:bg-zinc-700/80' />
+                <Sidebar  />
             </div>
 
             <div className='flex w-[87%]'>
@@ -31,6 +28,8 @@ function Dashboard() {
                     <ExtremeRightBar />
                 </div>
             </div>
+
+            
         </div>
         
         
