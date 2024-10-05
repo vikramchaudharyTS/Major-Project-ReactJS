@@ -50,11 +50,17 @@ function Sidebar() {
         optionName: "Logout",
         to:'/logout'
     }
+    const go = {
+        icon: <GrFingerPrint />,
+        optionName: "Go Vault",
+        to:'/dashboard'
+    }
 
 
   return (
     <>
-        <div className='bg-zinc-800/60 h-[98%] py-5 px-3 mt-2 ml-2 rounded-lg flex flex-col justify-between'>
+        <div className='py-2 h-[99%]'>
+        <div className='bg-zinc-800/60 h-full  py-5 px-3 ml-2 rounded-lg flex flex-col justify-between overflow-hidden'>
             <div>
                 {/* logo and site name */}
                 <div className='flex justify-between px-2 items-center mb-8'>
@@ -69,9 +75,10 @@ function Sidebar() {
                 <ThreePartButtons options={options} />
             </div>
 
-
+            <SingleButton data={go} />
             <SingleButton data={logout} />
             
+        </div>
         </div>
     </>
   )
