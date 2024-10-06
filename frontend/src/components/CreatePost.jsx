@@ -16,7 +16,7 @@ const CreatePost = ({isCreatePostActive, setIsCreatePostActive}) => {
               </span>
             </div>
           </div>
-          <button onClick={()=>setIsCreatePostActive(!isCreatePostActive)} className="text-gray-500 hover:text-gray-700">&times;</button>
+          <button onClick={()=>setIsCreatePostActive(!isCreatePostActive)} className="text-gray-500 hover:text-gray-700 text-lg">&times;</button>
         </div>
 
         {/* Form Section */}

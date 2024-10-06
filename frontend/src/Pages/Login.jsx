@@ -1,49 +1,43 @@
-import React, { useState } from 'react';
+//@ts-nocheck
+import React, { useEffect } from 'react'
+import {Link} from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import instance from '../utils/axios'
 
-const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+function Login() {
+  
+  const {register, handleSubmit, reset} = useForm()
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-    // Login logic goes here
-  };
+
+  async function handleFormData(data) {
+    try {
+        const response = await instance.post('/login', data);
+        console.log(response.data);
+        reset();
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
+  
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="max-w-md w-full bg-gray-800 p-8 rounded-lg shadow-lg">
-        <h1 className="text-center text-3xl font-semibold text-white mb-6">Login</h1>
-        <form onSubmit={handleLogin}>
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-400 mb-2">Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="w-full h-12 px-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-400 mb-2">Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="w-full h-12 px-3 bg-gray-700 text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <button
-            type="submit"
-            className="w-full h-12 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Login
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
+    <>
+      <div className='w-full h-screen flex flex-col items-center justify-center'>
+        <div className='w-[400px] h-fit bg-zinc-800/90 py-6 px-5 flex flex-col gap-5 items-center rounded-lg'>
+          <h1 className='text-2xl font-semibold'>Login</h1>
+          <p>Don't have an account?  <Link className='text-sky-400 underline' to='/register'>Sign up</Link>  </p>
 
-export default LoginPage;
+          <form className='flex flex-col gap-5 items-center w-full' onSubmit={handleSubmit(handleFormData)}>
+            <input {...register('username')} type="username" className='bg-zinc-700/80 rounded-lg outline-none py-2 px-3 w-full mt-4' placeholder='username' />
+            <input {...register('password')} type="password" className='bg-zinc-700/80 rounded-lg outline-none py-2 px-3 w-full' placeholder='password' />
+            <button className='w-full py-2 bg-sky-600 rounded-lg font-semibold hover:bg-sky-500 m-4'>Login</button>
+          </form>
+
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default Login
