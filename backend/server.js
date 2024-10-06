@@ -4,7 +4,6 @@ const session = require("express-session")
 const cookieParser = require("cookie-parser")
 const cors = require('cors')
 
-
 // Middleware setup
 
 app.use(cors());
@@ -20,14 +19,21 @@ app.use(cookieParser());
 
 app.get("/", (req,res)=>{})
 
-
-
+//routes
 app.use("/", require("./routes/userRoutes"))
 app.use("/dashboard/", require("./routes/postRoutes"))
-
+//auth
 app.use("/", require("./auth/userAuth"))
-
+//controllers
 app.use("/dashboard/user", require("./controllers/userControllers"))
 app.use("/dashboard/post", require("./controllers/postControllers"))
+
+
+//Centralized error handling
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+});
+
 
 app.listen(3000, ()=> console.log("server running on port 3000"))

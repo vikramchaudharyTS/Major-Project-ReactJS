@@ -1,92 +1,118 @@
-const router = require("express").Router()
-const isAuth =  require("../middlewares/userMiddleware")
-const userModel = require("../models/userModel")
-const postModel = require("../models/postModel")
+const router = require("express").Router();
+const isAuth = require("../middlewares/userMiddleware");
+const userModel = require("../models/userModel");
+const postModel = require("../models/postModel");
 
+// Register and Login routes (simple responses)
+router.get("/register", (req, res) => {
+    res.json({ message: "Register page data" });
+});
 
-router.get("/register", (req,res)=>{
-    res.render("register")
-})
+router.get("/login", (req, res) => {
+    res.json({ message: "Login page data" });
+});
 
-router.get("/login", (req,res)=>{
-    res.render("login")
-})
+router.get("/feed", (req, res) => {
+    res.json({ message: "Feed page data" });
+});
 
-router.get("/feed", (req,res)=>{
-    res.render("feed")
-})
-
-
+// Dashboard route (Authenticated)
 router.get("/dashboard", isAuth, async (req, res) => {
     try {
-        if (!req.session.userId) {
-            return res.redirect('/login')
-        }
-        const user = await userModel.findById(req.session.userId)
-            .populate('followers', 'username email')
-            .exec();
-        if (!user) {
-            return res.status(404).send("User not found");
-        }
-        const posts = await postModel.find().populate('userId', 'username email').sort({ createdAt: -1 }).exec();
-        const allUsers = await userModel.find().exec();
-        const following = await userModel.find({ _id: { $in: user.following } }).exec();
+        const user = req.user;
 
-        res.render("dashboard", { currentRoute: 'dashboard', user, posts, allUsers, following });
+        // Fetch posts and users concurrently
+        const [posts, allUsers] = await Promise.all([
+            postModel.find().populate('userId', 'username email').sort({ createdAt: -1 }).exec(),
+            userModel.find().exec()
+        ]);
+
+        res.json({
+            currentRoute: 'dashboard',
+            user,
+            posts,
+            allUsers,
+            following: user.following
+        });
     } catch (error) {
         console.error(error);
-        res.status(500).send("Server error");
+        return res.status(500).json({ message: "Server error" });
     }
 });
 
+// Profile route (Authenticated)
+router.get("/profile", isAuth, async (req, res) => {
+    try {
+        const user = req.user;
 
+        // Fetch posts and userPosts concurrently
+        const [posts, userPosts] = await Promise.all([
+            postModel.find().populate('userId', 'username email').sort({ createdAt: -1 }).exec(),
+            postModel.find({ userId: user._id, img: { $exists: true, $ne: null } }).sort({ createdAt: -1 }).exec()
+        ]);
 
-router.get("/profile", isAuth, async (req,res)=>{
-        const user = await userModel.findById(req.session.userId)
-        const posts = await postModel.find().populate('userId', 'username email').sort({ createdAt: -1 }).exec();
-        const allUsers = await userModel.find().exec();
-        const following = await userModel.find({ _id: { $in: user.following } }).exec()
-        const userPosts = await postModel.find({userId: req.session.userId, img: { $exists: true, $ne: null }}).sort({ createdAt: -1 }).exec();
-    res.render("profile", {currentRoute : 'profile', user, posts, allUsers, following, userPosts })
-})  
+        res.json({
+            currentRoute: 'profile',
+            user,
+            posts,
+            allUsers: await userModel.find(), // Fetch only if necessary
+            following: user.following,
+            userPosts
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+});
 
-
-
-router.get("/posts", isAuth, async (req,res)=>{
+// Posts route (Authenticated, returns data for post popup)
+router.get("/posts", isAuth, (req, res) => {
     const createPost = req.query.createPost === 'true'; // Check if createPost is true
-    res.render('components/post', { showPostPopup: createPost});
-})
+    res.json({ showPostPopup: createPost });
+});
 
+// Settings route (Authenticated)
+router.get("/settings", isAuth, async (req, res) => {
+    try {
+        const user = req.user;
+        res.json({
+            currentRoute: 'settings',
+            user,
+            following: user.following
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+});
 
+// Notifications route (Authenticated)
+router.get("/notifications", isAuth, async (req, res) => {
+    try {
+        const user = req.user;
 
+        // Fetch posts and all users concurrently
+        const [posts, allUsers] = await Promise.all([
+            postModel.find().exec(),
+            userModel.find().exec()
+        ]);
 
-router.get("/settings", isAuth, async (req,res)=>{
-    let user = await userModel.findOne({_id: req.session.userId});
-    const following = await userModel.find({ _id: { $in: user.following } }).exec();
+        res.json({
+            currentRoute: 'notifications',
+            user,
+            allUsers,
+            posts,
+            following: user.following
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+});
 
-    res.render("settings", {currentRoute: 'settings',user, following})
-})
+// Messages route (Authenticated)
+router.get("/messages", isAuth, (req, res) => {
+    res.json({ message: "Messages page data" });
+});
 
-
-
-
-router.get("/notifications", isAuth, async (req,res)=>{
-    let allUsers = await userModel.find({})
-    let posts = await postModel.find()
-    let user = await userModel.findOne({_id: req.session.userId});
-    const following = await userModel.find({ _id: { $in: user.following } }).exec();
-
-    res.render("notifications", {currentRoute: 'notifications', user, allUsers, posts, following})
-})
-
-
-
-
-router.get("/messages", isAuth, async (req,res)=>{
-    res.render("messages")
-})
-
-
-
-
-module.exports = router
+module.exports = router;
