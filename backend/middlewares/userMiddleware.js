@@ -8,7 +8,7 @@ async function isAuth(req, res, next) {
         const user = await userModel.findById(req.session.userId)
             .populate('followers', 'username email')
             .populate('following', 'username email');
-        
+            
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

@@ -5,7 +5,7 @@ import { useContext } from 'react';
 import { Context } from '../../contexts/Context';
 import { RiLogoutCircleLine } from "react-icons/ri";
 
-function LogoutButton({ data, onClick }) {
+function LogoutButton() {
 
   const {setIsAuth} = useContext(Context)
   const navigate = useNavigate()
