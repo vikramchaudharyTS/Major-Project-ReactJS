@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+//@ts-nocheck
 import ThreePartButtons from './comp/ThreePartButtons'
 import { IoHomeOutline } from "react-icons/io5";
 import { BiSolidBinoculars } from "react-icons/bi";
@@ -6,10 +6,10 @@ import { LuMessagesSquare } from "react-icons/lu";
 import { CgProfile } from "react-icons/cg";
 import { MdNotifications } from "react-icons/md";
 import { CiSettings } from "react-icons/ci";
-import SingleButton from './comp/SingleButton';
-import { RiLogoutCircleLine } from "react-icons/ri";
+import LogoutButton from './comp/LogoutButton';
 import SearchBar from './comp/SearchBar';
 import { GrFingerPrint } from "react-icons/gr";
+
 
 function Sidebar() {
     const options = [
@@ -45,16 +45,6 @@ function Sidebar() {
         }
     ]
 
-    const logout = {
-        icon: <RiLogoutCircleLine />,
-        optionName: "Logout",
-        to:'/logout'
-    }
-    const go = {
-        icon: <GrFingerPrint />,
-        optionName: "Go Vault",
-        to:'/dashboard'
-    }
 
 
   return (
@@ -75,8 +65,7 @@ function Sidebar() {
                 <ThreePartButtons options={options} />
             </div>
 
-            <SingleButton data={go} />
-            <SingleButton data={logout} />
+            <LogoutButton />
             
         </div>
         </div>
