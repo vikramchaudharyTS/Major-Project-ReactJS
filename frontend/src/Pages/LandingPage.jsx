@@ -1,7 +1,9 @@
 import React from 'react'
 import { GrFingerPrint } from "react-icons/gr";
+import { Link } from 'react-router-dom';
 
 function LandingPage() {
+
   return (
     <>
     
@@ -13,8 +15,8 @@ function LandingPage() {
               <h1>Vault</h1>
             </div>
               <div className='flex gap-7'>
-                <button className='bg-sky-700 hover:bg-sky-600 px-3 py-1 rounded-lg '>Sign up</button>
-                <button className='mr-3 hover:bg-green-700 px-3 py-1 rounded-lg'>Login</button>
+                <Link to='/register'><button className='bg-sky-700 hover:bg-sky-600 px-3 py-1 rounded-lg '>Sign up</button></Link>
+                <Link to='/login'><button className='mr-3 hover:bg-green-700 px-3 py-1 rounded-lg'>Login</button></Link>
               </div>
           </nav><hr />
 

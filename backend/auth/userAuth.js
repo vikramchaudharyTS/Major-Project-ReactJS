@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt")
 
 //register
 router.post("/register", async (req, res) => {
-    const { username, email, password } = req.body;
+    const { name, username, email, password } = req.body;
 
     try {
         let user = await userModel.findOne({ username });
@@ -14,6 +14,7 @@ router.post("/register", async (req, res) => {
             const hash = bcrypt.hashSync(password, 10);
             await userModel.create({
                 username,
+                name,
                 email,
                 password: hash,
             });

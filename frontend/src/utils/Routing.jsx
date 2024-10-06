@@ -1,3 +1,4 @@
+//@ts-nocheck
 import Dashboard from "../Pages/Dashboard";
 import Explorer from "../Pages/Explorer";
 import LandingPage from "../Pages/LandingPage";
@@ -7,12 +8,14 @@ import {Routes, Route} from 'react-router-dom'
 import Settings from "../Pages/Settings";
 import Notification from "../Pages/Notification";
 import Login from '../Pages/Login'
+import Register from "../Pages/Register";
 
 function Routing(){
     return(
         <Routes>
             <Route path="/" element={<LandingPage />}></Route>
             <Route path="/login" element={<Login />}></Route>
+            <Route path="/register" element={<Register />}></Route>
             <Route path="/dashboard" element={<Dashboard />}></Route>
             <Route path="/messages" element={<Messages />}></Route>
             <Route path="/explorer" element={<Explorer />}></Route>

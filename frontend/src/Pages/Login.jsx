@@ -1,11 +1,11 @@
 //@ts-nocheck
 import React, { useEffect } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import instance from '../utils/axios'
 
 function Login() {
-  
+  const navigate = useNavigate()
   const {register, handleSubmit, reset} = useForm()
 
 
@@ -14,6 +14,7 @@ function Login() {
         const response = await instance.post('/login', data);
         console.log(response.data);
         reset();
+        navigate('/dashboard')
     } catch (err) {
         console.log(err.message);
     }
