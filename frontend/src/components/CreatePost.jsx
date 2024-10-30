@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 const CreatePost = ({isCreatePostActive, setIsCreatePostActive}) => {
   
@@ -22,7 +22,7 @@ const CreatePost = ({isCreatePostActive, setIsCreatePostActive}) => {
         {/* Form Section */}
         <form className="space-y-4">
           <div>
-            <textarea name="desc" id="postContent" placeholder="What's happening?" className="w-full px-3 py-2 rounded-md bg-zinc-800 outline-none" >
+            <textarea name="desc" id="postContent" placeholder="What's happening?" className="w-full px-3 py-2 rounded-md bg-zinc-800 opacity-60 outline-none" >
             </textarea>
           </div>
           <div>

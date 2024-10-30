@@ -35,15 +35,6 @@ function ProfilePage() {
                         <AccountPosts />
                         <AccountPosts />
                         <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
-                        <AccountPosts />
                       </div>
                   </div>
                </div>

@@ -8,7 +8,7 @@ import { Context } from '../contexts/Context'
 function Login() {
   const navigate = useNavigate()
   const {register, handleSubmit, reset} = useForm()
-  const {setIsAuth} = useContext(Context)
+  const {setIsAuth, setUser} = useContext(Context)
 
 
   async function handleFormData(data) {
@@ -20,12 +20,11 @@ function Login() {
         console.log("Login successful");
         navigate('/dashboard')
     } catch (err) {
-        console.log(err.message);
+        console.log("EF-F/Login",err.message);
     }
 }
 
   
-
   return (
     <>
       <div className='w-full h-screen flex flex-col items-center justify-center'>

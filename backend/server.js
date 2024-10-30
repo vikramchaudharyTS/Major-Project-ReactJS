@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require("express")
 const app = express()
 const session = require("express-session")
@@ -6,12 +7,15 @@ const cors = require('cors')
 
 // Middleware setup
 
-app.use(cors());
-app.use(session({
-    resave: false,
-    saveUninitialized: false,
-    secret: "secret"
+app.use(cors({
+    origin: 'http://localhost:5173', // Change this to your frontend URL
+    credentials: true, // Allow credentials to be sent
 }));
+// app.use(session({
+//     resave: false,
+//     saveUninitialized: false,
+//     secret: "secret"
+// }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -19,13 +23,14 @@ app.use(cookieParser());
 
 app.get("/", (req,res)=>{})
 
+const userRoutes = require('./routes/userRoutes')
 //routes
-app.use("/", require("./routes/userRoutes"))
-app.use("/dashboard/", require("./routes/postRoutes"))
+app.use("/", userRoutes)
+// app.use("/dashboard/", require("./routes/postRoutes"))
 //auth
 app.use("/", require("./auth/userAuth"))
 //controllers
-app.use("/dashboard/user", require("./controllers/userControllers"))
+app.use('/user', require('./controllers/userControllers'))
 app.use("/dashboard/post", require("./controllers/postControllers"))
 
 
@@ -36,4 +41,7 @@ app.use((err, req, res, next) => {
 });
 
 
-app.listen(3000, ()=> console.log("server running on port 3000"))
+
+app.listen(3000, ()=> (
+    console.log("server running on port 3000")
+))

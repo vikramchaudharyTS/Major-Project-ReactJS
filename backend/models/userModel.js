@@ -32,14 +32,22 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     }],
-    requests: [{
+    profileImg:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }],
+        ref: 'Post'
+    },
+    coverImg:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+    },
     savedPosts: {
         type: Array,
         default: []
-    }
+    },
+    blockedUsers:[{
+        type: mongoose.Schema.Types.ObjectId,
+        default:[]
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

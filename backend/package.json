@@ -39,6 +39,7 @@
     "depd": "^2.0.0",
     "destroy": "^1.2.0",
     "detect-libc": "^2.0.3",
+    "dotenv": "^16.4.5",
     "ee-first": "^1.1.1",
     "emoji-regex": "^8.0.0",
     "encodeurl": "^2.0.0",
@@ -71,6 +72,7 @@
     "ipaddr.js": "^1.9.1",
     "is-fullwidth-code-point": "^3.0.0",
     "isarray": "^1.0.0",
+    "jsonwebtoken": "^9.0.2",
     "kareem": "^2.6.3",
     "make-dir": "^3.1.0",
     "media-typer": "^0.3.0",
@@ -95,6 +97,7 @@
     "negotiator": "^0.6.3",
     "node-addon-api": "^5.1.0",
     "node-fetch": "^2.7.0",
+    "nodemon": "^3.1.7",
     "nopt": "^5.0.0",
     "npmlog": "^5.0.1",
     "object-assign": "^4.1.1",
@@ -150,7 +153,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node --watch server"
   },
   "keywords": [],
   "author": "",
