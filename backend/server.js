@@ -8,7 +8,7 @@ const cors = require('cors')
 // Middleware setup
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Change this to your frontend URL
+    origin: '*', // Change this to your frontend URL
     credentials: true, // Allow credentials to be sent
 }));
 // app.use(session({
@@ -23,14 +23,14 @@ app.use(cookieParser());
 
 app.get("/", (req,res)=>{})
 
-const userRoutes = require('./routes/userRoutes')
+
 //routes
-app.use("/", userRoutes)
+app.use("/", require('./routes/userRoutes'))
 // app.use("/dashboard/", require("./routes/postRoutes"))
 //auth
 app.use("/", require("./auth/userAuth"))
 //controllers
-app.use('/user', require('./controllers/userControllers'))
+// app.use('/user', require('./controllers/userControllers'))
 app.use("/dashboard/post", require("./controllers/postControllers"))
 
 

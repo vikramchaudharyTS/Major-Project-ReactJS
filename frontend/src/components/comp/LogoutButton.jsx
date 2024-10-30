@@ -1,34 +1,23 @@
 //@ts-nocheck
-import React from "react";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Context } from "../../contexts/Context";
 import { RiLogoutCircleLine } from "react-icons/ri";
-import instance from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
 
 function LogoutButton() {
-  const { setIsAuth } = useContext(Context);
-  const navigate = useNavigate()
-  const {setUser}=useContext(Context)
+  const { logout } = useContext(Context); // Get logout function from context
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      instance.get('/logout', { withCredentials: true })
-      .then(response => {
-          console.log(response.data);
-      })
-      .catch(error => {
-          console.error('Error logging out:', error);
-      });
-  
-        setIsAuth(false);
-        navigate('/login');
-        console.log("Logged out successfully");
+      await logout(); // Call the logout function from context
+      navigate('/login'); // Redirect to login page
+      console.log("Logged out successfully");
     } catch (error) {
-        console.error("Error logging out:", error.message);
-        // Optionally, show a user-friendly message
+      console.error("Error logging out:", error.message);
+      // Optionally, show a user-friendly message
     }
-};
+  };
 
   return (
     <div

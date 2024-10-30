@@ -11,11 +11,12 @@ import Settings from "../Pages/Settings";
 import Notification from "../Pages/Notification";
 import Login from '../Pages/Login';
 import Register from "../Pages/Register";
+import EmailVerification from '../components/EmailVerification';
 
 // Custom Private Route component for route protection
-function PrivateRoute({ element: Component }) {
+function PrivateRoute({ element }) {
     const { isAuth } = useContext(Context);
-    return isAuth ? Component : <Navigate to="/login" />;
+    return isAuth ? element : <Navigate to="/login" replace />;
 }
 
 function Routing() {
@@ -25,6 +26,8 @@ function Routing() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path='/email-verification' element={<EmailVerification />} />
+
 
             {/* Protected routes */}
             <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />

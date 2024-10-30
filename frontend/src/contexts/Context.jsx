@@ -1,12 +1,14 @@
 //@ts-nocheck
-import { createContext, useState } from "react";
+import React, { createContext, useState, useContext } from 'react';
+import { auth } from '../config/firebase'; // Import your Firebase configuration
+
 export const Context = createContext();
 
 const ActiveContext = ({ children }) => {
-  const [isAuth, setIsAuth] = useState(false);
-
-  const [user, setUser] = useState("");
-  //messaging user context
+  const [isAuth, setIsAuth] = useState(false); // Authentication state
+  const [user, setUser] = useState(null); // User object or null if not logged in
+ 
+ // Users for messaging context
   const users = [
     {
       name: "Vikram",
@@ -95,13 +97,35 @@ const ActiveContext = ({ children }) => {
     },
   ];
 
+
+ // Function to log in a user
+  const login = (userData) => {
+    setUser(userData); // Set the user data
+    setIsAuth(true); // Set authentication state to true
+  };
+  // Function to log out the user
+  const logout = async () => {
+    try {
+      await auth.signOut(); // Sign out from Firebase
+      setUser(null); // Clear user data
+      setIsAuth(false); // Set authentication state to false
+    } catch (error) {
+      console.error("Error during logout:", error.message);
+      // Optionally, show a user-friendly message
+    }
+  };
+
   return (
-    <>
-      <Context.Provider value={{ users, user, setUser,isAuth, setIsAuth }}>
-        {children}
-      </Context.Provider>
-    </>
+    <Context.Provider value={{ user, login, logout, isAuth, users, setUser }}>
+      {children}
+    </Context.Provider>
   );
 };
 
+// Custom hook to use the context in components
+export const useActiveContext = () => {
+  return useContext(Context);
+};
+
 export default ActiveContext;
+
