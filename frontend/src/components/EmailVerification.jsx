@@ -23,7 +23,7 @@ function EmailVerification() {
       }
     };
 
-    const interval = setInterval(checkVerification, 3000); // Check every 3 seconds
+    const interval = setInterval(checkVerification, 2000); // Check every 2 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [user]);

@@ -1,15 +1,27 @@
-//@ts-nocheck
 import React, { useContext, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Navbar from '../components/Navbar';
 import Feed from '../components/Feed';
 import Notifications from '../components/Notifications';
 import ExtremeRightBar from '../components/ExtremeRightBar';
-import instance from '../utils/axios';
-import { Context } from '../contexts/Context';
+import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
+
 
 function Dashboard() {
-    const { user, setUser } = useContext(Context);
+    const { user, isAuthenticated, isLoading, isCheckingAuth } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login");
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (isCheckingAuth || isLoading) {
+    return <LoadingSpinner />;
+  }
 
     return (
         <>
@@ -36,6 +48,7 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
+            <h1>Dashboard</h1>
         </>
     );
 }

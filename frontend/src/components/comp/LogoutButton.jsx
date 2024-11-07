@@ -1,35 +1,37 @@
 //@ts-nocheck
-import React, { useContext } from "react";
-import { Context } from "../../contexts/Context";
-import { RiLogoutCircleLine } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore.js";
+import { motion } from "framer-motion";
+import { LogOut } from "lucide-react"; // Optional icon
 
-function LogoutButton() {
-  const { logout } = useContext(Context); // Get logout function from context
-  const navigate = useNavigate();
-
+const LogoutButton = () => {
+  const { logout, isLoading } = useAuthStore();
+  
   const handleLogout = async () => {
     try {
-      await logout(); // Call the logout function from context
-      navigate('/login'); // Redirect to login page
-      console.log("Logged out successfully");
+      await logout();
     } catch (error) {
-      console.error("Error logging out:", error.message);
-      // Optionally, show a user-friendly message
+      console.error("Logout error:", error);
     }
   };
 
   return (
-    <div
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={handleLogout}
-      className={`px-3 py-2 items-center gap-3 text-md w-52 rounded-lg flex cursor-pointer hover:bg-zinc-700/70 hover:font-semibold`}
+      className="w-full py-3 px-4 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
+      disabled={isLoading}
     >
-      <div>
-        <RiLogoutCircleLine />
-      </div>
-      <h1>Logout</h1>
-    </div>
+      {isLoading ? (
+        <div className="w-6 h-6 animate-spin mx-auto"> {/* Add a loading spinner here if needed */}</div>
+      ) : (
+        <>
+          <LogOut className="inline-block mr-2" /> {/* Logout icon */}
+          Logout
+        </>
+      )}
+    </motion.button>
   );
-}
+};
 
 export default LogoutButton;

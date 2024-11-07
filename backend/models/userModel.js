@@ -1,24 +1,26 @@
-const mongoose = require("mongoose")
-
-mongoose.connect("mongodb://127.0.0.1:27017/Final-nodejs-project").then((res)=> console.log("User DB connected"))
+import mongoose, { mongo } from "mongoose";
 
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: true,
         unique: true
     },
     name: {
         type: String,
         required: true,
-        unique: true
     },
     email: {
-        type: String
+        type: String,
+        required: true,
+        unique: true
     },
     password:{
         type: String,
-        required: true
+        // required: true,
+    },
+    firebaseUID: { // New field for Firebase UID
+        type: String,
+        unique: true
     },
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -33,12 +35,10 @@ const userSchema = new mongoose.Schema({
         ref: 'Post'
     }],
     profileImg:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
+        type: String // Store URL or path to image
     },
     coverImg:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
+        type: String // Store URL or path to image
     },
     savedPosts: {
         type: Array,
@@ -47,7 +47,20 @@ const userSchema = new mongoose.Schema({
     blockedUsers:[{
         type: mongoose.Schema.Types.ObjectId,
         default:[]
-    }]
+    }],
+    lastLogin:{
+        type:Date,
+        default: Date.now()
+    },
+    isVerified:{
+        type: Boolean,
+        default: false,
+    },
+    resetPasswordToken: String,
+    resetPasswordExpiresAt: Date,
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
 }, { timestamps: true });
 
-module.exports = mongoose.model("User", userSchema);
+export const userModel = mongoose.model("User", userSchema)
+

@@ -1,82 +1,91 @@
 //@ts-nocheck
-import React, { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { Context } from '../contexts/Context';
-import { auth } from '../config/firebase';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { motion } from "framer-motion";
+import Input from "../components/Input";
+import { Loader, Lock, Mail, User } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
+import { useAuthStore } from "../store/authStore";
 
-function Register() {
-  const navigate = useNavigate();
-  const { register, handleSubmit, reset } = useForm();
-  const [error, setError] = useState(null);
+const Register = () => {
+	const [name, setName] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const navigate = useNavigate();
 
-  async function handleFormData(data) {
-    const { email, username, password, name } = data;
-    try {
-      // Register user
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+	const { signup, error, isLoading } = useAuthStore();
 
-      // Set additional user details if needed, like username (consider Firestore for storing additional details)
+	const handleSignUp = async (e) => {
+		e.preventDefault();
 
-      // Send verification email
-      await sendEmailVerification(user);
-      console.log('Verification email sent to:', email);
+		try {
+			await signup(email, password, name);
+			navigate("/verify-email");
+		} catch (error) {
+			console.log(error.message);
+		}
+	};
+	return (
+		<motion.div
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.5 }}
+			className='max-w-md w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl 
+			overflow-hidden'
+		>
+			<div className='p-8'>
+				<h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text'>
+					Create Account
+				</h2>
 
-      // Redirect to email verification page
-      reset();
-      navigate('/email-verification');
-    } catch (err) {
-      setError(err.message);
-      console.log("EF-F/Register", err.message);
-    }
-  }
+				<form onSubmit={handleSignUp}>
+					<Input
+						icon={User}
+						type='text'
+						placeholder='Full Name'
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+					/>
+					<Input
+						icon={Mail}
+						type='email'
+						placeholder='Email Address'
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+					/>
+					<Input
+						icon={Lock}
+						type='password'
+						placeholder='Password'
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+					{error && <p className='text-red-500 font-semibold mt-2'>{error}</p>}
+					<PasswordStrengthMeter password={password} />
 
-  return (
-    <div className='w-full h-screen flex flex-col items-center justify-center'>
-      <div className='w-[400px] h-fit bg-zinc-800/90 py-6 px-5 flex flex-col gap-5 items-center rounded-lg'>
-        <h1 className='text-2xl font-semibold'>Register</h1>
-        <p>Already have an account? <Link className='text-sky-400 underline' to='/login'>Login</Link></p>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <form className='flex flex-col gap-5 items-center w-full' onSubmit={handleSubmit(handleFormData)}>
-          <input
-            autoCorrect="off"
-            autoComplete="off"
-            {...register('name')}
-            type="text"
-            className='bg-zinc-700/80 rounded-lg outline-none py-2 px-3 w-full mt-4'
-            placeholder='name'
-          />
-          <input
-            autoCorrect="off"
-            autoComplete="off"
-            {...register('email')}
-            type="email"
-            className='bg-zinc-700/80 rounded-lg outline-none py-2 px-3 w-full'
-            placeholder='email'
-          />
-          <input
-            autoCorrect="off"
-            autoComplete="off"
-            {...register('username')}
-            type="text"
-            className='bg-zinc-700/80 rounded-lg outline-none py-2 px-3 w-full'
-            placeholder='username'
-          />
-          <input
-            autoCorrect="off"
-            autoComplete="off"
-            {...register('password')}
-            type="password"
-            className='bg-zinc-700/80 rounded-lg outline-none py-2 px-3 w-full'
-            placeholder='password'
-          />
-          <button className='w-full py-2 bg-sky-600 rounded-lg font-semibold hover:bg-sky-500 m-4'>Register</button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
+					<motion.button
+						className='mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white 
+						font-bold rounded-lg shadow-lg hover:from-green-600
+						hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+						 focus:ring-offset-gray-900 transition duration-200'
+						whileHover={{ scale: 1.02 }}
+						whileTap={{ scale: 0.98 }}
+						type='submit'
+						disabled={isLoading}
+					>
+						{isLoading ? <Loader className=' animate-spin mx-auto' size={24} /> : "Sign Up"}
+					</motion.button>
+				</form>
+			</div>
+			<div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>
+				<p className='text-sm text-gray-400'>
+					Already have an account?{" "}
+					<Link to={"/login"} className='text-green-400 hover:underline'>
+						Login
+					</Link>
+				</p>
+			</div>
+		</motion.div>
+	);
+};
 export default Register;

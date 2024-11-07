@@ -1,47 +1,31 @@
-require('dotenv').config()
-const express = require("express")
+import dotenv, { config } from 'dotenv'
+import express from 'express'
+import { connectDB } from './db/connectDB.js'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+
+import authRoutes from './routes/userRoutes.js'
+
+dotenv.config()
 const app = express()
-const session = require("express-session")
-const cookieParser = require("cookie-parser")
-const cors = require('cors')
-
-// Middleware setup
-
 app.use(cors({
-    origin: '*', // Change this to your frontend URL
-    credentials: true, // Allow credentials to be sent
-}));
-// app.use(session({
-//     resave: false,
-//     saveUninitialized: false,
-//     secret: "secret"
-// }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 
-
-app.get("/", (req,res)=>{})
-
-
-//routes
-app.use("/", require('./routes/userRoutes'))
-// app.use("/dashboard/", require("./routes/postRoutes"))
-//auth
-app.use("/", require("./auth/userAuth"))
-//controllers
-// app.use('/user', require('./controllers/userControllers'))
-app.use("/dashboard/post", require("./controllers/postControllers"))
-
-
+app.use(express.json())
+app.use(cookieParser())
 //Centralized error handling
 app.use((err, req, res, next) => {
     console.error(err);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "EF-B/CEH - Internal server error" });
 });
 
 
+app.use('/api/auth', authRoutes)
 
-app.listen(3000, ()=> (
-    console.log("server running on port 3000")
-))
+
+app.listen(3000,()=>{
+    connectDB()
+    console.log("Server up and running at 3000");
+})

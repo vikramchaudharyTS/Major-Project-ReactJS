@@ -1,22 +1,29 @@
 const userModel = require("../models/userModel");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const isAuth = require("../middlewares/userMiddleware");
+const admin = require("../firebase/firebase-admin");
 
 // Register
 router.post("/register", async (req, res) => {
-    const { name, username, email, password } = req.body;
+    const { name, username, email, password, firebaseUID } = req.body;
     try {
-        const {name, username, email, password} = req.body;
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        // Regular email-password registration requires a password
+        if (!firebaseUID && !password) {
+            return res.status(400).json({ message: "Password is required for email registration" });
+        }
 
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email)) {
             return res.status(400).json({ message: "Invalid email format" });
         }
 
-        const existingUser = await userModel.findOne({
-            $or: [{ username }, { email }]
+        const existingUser = await userModel.findOne({ 
+            $or: [
+                { username }, 
+                { email: { $regex: new RegExp(`^${email}$`, 'i') } }
+            ]
         });
 
         if (existingUser) {
@@ -27,18 +34,24 @@ router.post("/register", async (req, res) => {
                 return res.status(400).json({ error: "Email already exists!" });
             }
         }
-        const hashedPassword = await bcrypt.hashSync(password, 10)
+
+        // Hash the password if it's provided (skip for Google sign-ups)
+        let hashedPassword = undefined;
+        if (password) {
+            console.log("Password received for hashing:", password);
+            hashedPassword = await bcrypt.hash(password, 10);
+        }
+
         const newUser = new userModel({
             name,
             username,
             email,
-            password: hashedPassword
-        })
+            firebaseUID,
+            password: hashedPassword, // Will be undefined for Google sign-ups
+        });
 
-        // Save the new user to the database
         await newUser.save();
 
-        // Respond with user data
         res.status(201).json({
             _id: newUser._id,
             name: newUser.name,
@@ -47,47 +60,63 @@ router.post("/register", async (req, res) => {
             followers: newUser.followers,
             following: newUser.following,
             profileImg: newUser.profileImg,
-            coverImg: newUser.coverImg
+            coverImg: newUser.coverImg,
         });
-      
     } catch (error) {
         console.error("EF-B/Register", error.message);
         return res.status(500).json({ From: "Backend", message: "An error occurred during registration" });
     }
 });
 
-
-
-// Login
+// login    
 router.post("/login", async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, idToken } = req.body;
+  
     try {
-        const user = await userModel.findOne({ username }).select("username password");
-
-        if (!user || !(await bcrypt.compare(password, user.password))) {
-            return res.status(401).json({ message: "Invalid username or password." });
+      if (idToken) {
+        // Google login logic
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        const { uid, email, name } = decodedToken;
+  
+        let user = await userModel.findOne({ firebaseUID: uid });
+        if (!user) {
+          user = new userModel({
+            firebaseUID: uid,
+            name: name || "New User",
+            email: email || "",
+            username: email.split("@")[0],
+          });
+          await user.save();
         }
-
-        const token = jwt.sign({ username: user.username }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
-        res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: false,
-            maxAge: 3600000,
-            sameSite: 'None'
-        })
-        return res.json({ message: "Welcome to dashboard!" });
+  
+        const token = jwt.sign({ username: user.username }, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
+        res.cookie("jwt", token, { httpOnly: true, secure: false, maxAge: 3600000, sameSite: "None" });
+        return res.json({ message: "Welcome to the dashboard!" });
+      } else if (username && password) {
+        // Regular login logic
+        const user = await userModel.findOne({ username });
+        if (!user) return res.status(401).json({ message: "Invalid credentials" });
+  
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) return res.status(401).json({ message: "Invalid credentials" });
+  
+        const token = jwt.sign({ username: user.username }, process.env.ACCESS_TOKEN, { expiresIn: "1h" });
+        res.cookie("jwt", token, { httpOnly: true, secure: false, maxAge: 3600000, sameSite: "None" });
+        return res.json({ message: "Welcome to the dashboard!" });
+      } else {
+        return res.status(400).json({ message: "Missing credentials" });
+      }
     } catch (error) {
-        console.error("EF-B/Login", error.message);
-        return res.status(500).json({ From: "Backend", message: error.message });
+      console.error("EF-B/Login", error.message);
+      return res.status(500).json({ message: error.message });
     }
-});
-
-
+  });
+  
 
 // Logout
-router.get("/logout", isAuth,async (req, res) => {
+router.get("/logout", isAuth, async (req, res) => {
     try {
-        res.clearCookie('jwt')
+        res.clearCookie("jwt");
         return res.status(200).json({ message: "Logout successful!" });
     } catch (error) {
         console.error("EF-B/Logout", error.message);
@@ -95,7 +124,4 @@ router.get("/logout", isAuth,async (req, res) => {
     }
 });
 
-
 module.exports = router;
-
-

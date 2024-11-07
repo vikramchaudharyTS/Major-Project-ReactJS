@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
-import { Context } from '../../contexts/Context'
+
 
 function MessagesCard() {
 
-    const {users} = useContext(Context)
+    // const {users} = useContext(Context)
     
   return (
         <>
-            {users.map((data, index)=>(
+            {/* {users.map((data, index)=>(
                 <div key={index} className='flex w-full items-center flex-nowrap p-2 hover:bg-zinc-800/80 hover:rounded-lg cursor-pointer'>
                     <div className='w-[15%]'>
                         <img className='w-10 h-10 object-cover rounded-full object-top' src={`${data.img}`} alt="User avatar" />
@@ -19,7 +19,7 @@ function MessagesCard() {
                         </div>
                     </h1>
              </div>
-            ))}
+            ))} */}
         </>
   )
 }

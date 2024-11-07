@@ -1,5 +1,6 @@
 //@ts-nocheck
-import ThreePartButtons from './comp/ThreePartButtons'
+import React from 'react';
+import ThreePartButtons from './comp/ThreePartButtons';
 import { IoHomeOutline } from "react-icons/io5";
 import { BiSolidBinoculars } from "react-icons/bi";
 import { LuMessagesSquare } from "react-icons/lu";
@@ -10,23 +11,22 @@ import LogoutButton from './comp/LogoutButton';
 import SearchBar from './comp/SearchBar';
 import { GrFingerPrint } from "react-icons/gr";
 
-
 function Sidebar() {
     const options = [
         {
             icon: <IoHomeOutline />,
             optionName: "Dashboard",
-            to:'/dashboard'
+            to: '/dashboard'
         },
         {
             icon: <BiSolidBinoculars />,
             optionName: "Explorer",
-            to:'/explorer'
+            to: '/explorer'
         },
         {
             icon: <LuMessagesSquare />,
             optionName: "Messages",
-            to:'/messages'
+            to: '/messages'
         },
         {
             icon: <CgProfile />,
@@ -36,41 +36,38 @@ function Sidebar() {
         {
             icon: <MdNotifications />,
             optionName: "Notifications",
-            to:'/notifications'
+            to: '/notifications'
         },
         {
             icon: <CiSettings />,
             optionName: "Settings",
-            to:'/settings'
+            to: '/settings'
         }
-    ]
+    ];
 
-
-
-  return (
-    <>
-        <div className='py-2 h-[99%]'>
-        <div className='bg-zinc-800/60 h-full  py-5 px-3 ml-2 rounded-lg flex flex-col justify-between overflow-hidden'>
+    return (
+        <div className="h-[99%] py-4 px-3 bg-zinc-800/60 rounded-lg ml-2 flex flex-col justify-between overflow-hidden shadow-lg">
             <div>
-                {/* logo and site name */}
-                <div className='flex justify-between px-2 items-center mb-8'>
-                    <div className='text-4xl cursor-pointer'><GrFingerPrint /></div>
-                    <h1 className='font-semibold text-xl cursor-pointer'>Vault</h1>
+                {/* Logo and site name */}
+                <div className="flex items-center justify-between px-2 mb-6 cursor-pointer">
+                    <div className="text-4xl text-blue-500"><GrFingerPrint /></div>
+                    <h1 className="font-semibold text-2xl text-white">Vault</h1>
                 </div>
-                <hr className="border-zinc-600 mb-7" />
+                <hr className="border-zinc-600 mb-6" />
 
-                {/* search */}
-                <div className='mb-7'><SearchBar /></div>
-                {/* options */}
+                {/* Search bar */}
+                <div className="mb-6">
+                    <SearchBar />
+                </div>
+
+                {/* Navigation options */}
                 <ThreePartButtons options={options} />
             </div>
 
+            {/* Logout button */}
             <LogoutButton />
-            
         </div>
-        </div>
-    </>
-  )
+    );
 }
 
-export default Sidebar
+export default Sidebar;
