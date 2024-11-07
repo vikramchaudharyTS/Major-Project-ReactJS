@@ -10,7 +10,12 @@ import ResetPasswordPage from '../Pages/ResetPasswordPage';
 import { useAuthStore } from '../store/authStore';
 import { useEffect } from 'react';
 import LandingPage from '../Pages/LandingPage';
-
+import Settings from '../Pages/Settings'
+import Messages from '../Pages/Messages'
+import Notification from '../Pages/Notification'
+import PofilePage from '../Pages/ProfilePage'
+import Explorer from '../Pages/Explorer'
+import ProfilePage from '../Pages/ProfilePage';
 
 const ProtectedRoutes = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
@@ -50,6 +55,11 @@ function Routing() {
           <Route path='/forgot-password' element={<ForgotPasswordPage />} />
           <Route path='/reset-password/:token' element={<ResetPasswordPage />} />
           <Route path='/dashboard' element={<ProtectedRoutes><Dashboard/></ProtectedRoutes>} />
+          <Route path='/explorer' element={<ProtectedRoutes><Explorer/></ProtectedRoutes>} />
+          <Route path='/messages' element={<ProtectedRoutes><Messages/></ProtectedRoutes>} />
+          <Route path='/profile' element={<ProtectedRoutes><ProfilePage/></ProtectedRoutes>} />
+          <Route path='/notifications' element={<ProtectedRoutes><Notification/></ProtectedRoutes>} />
+          <Route path='/settings' element={<ProtectedRoutes><Settings/></ProtectedRoutes>} />
         </Routes>
       </div>
     );
