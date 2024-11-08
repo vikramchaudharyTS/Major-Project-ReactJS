@@ -1,7 +1,6 @@
 //@ts-nocheck
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../Pages/Dashboard';
-import LoadingSpinner from '../components/LoadingSpinner';
 import Register from '../Pages/Register';
 import LoginPage from '../Pages/Login';
 import EmailVerificationPage from '../Pages/EmailVerificationPage';
@@ -9,13 +8,14 @@ import ForgotPasswordPage from '../Pages/ForgotPassworPage';
 import ResetPasswordPage from '../Pages/ResetPasswordPage';
 import { useAuthStore } from '../store/authStore';
 import { useEffect } from 'react';
+import LoadingSpinner from '../components/LoadingSpinner';
 import LandingPage from '../Pages/LandingPage';
-import Settings from '../Pages/Settings'
-import Messages from '../Pages/Messages'
-import Notification from '../Pages/Notification'
-import PofilePage from '../Pages/ProfilePage'
-import Explorer from '../Pages/Explorer'
+import Settings from '../Pages/Settings';
+import Messages from '../Pages/Messages';
+import Notification from '../Pages/Notification';
 import ProfilePage from '../Pages/ProfilePage';
+import Explorer from '../Pages/Explorer';
+import Layout from '../layouts/Layout'; 
 
 const ProtectedRoutes = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
@@ -30,7 +30,7 @@ const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
 
     if (isAuthenticated && user?.isVerified) {
-      return <Navigate to='/' replace />;
+      return <Navigate to='/dashboard' replace />;
     }
 
     return children;
@@ -46,22 +46,28 @@ function Routing() {
     if (isCheckingAuth) return <LoadingSpinner />;
 
     return (
-        <div className='absolute inset-0 flex items-center justify-center w-full'>
         <Routes>
-          <Route path='/' element={<ProtectedRoutes><LandingPage /></ProtectedRoutes>} />
+          {/* Public routes */}
+
           <Route path='/signup' element={<Register/>} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/verify-email' element={<EmailVerificationPage />} />
           <Route path='/forgot-password' element={<ForgotPasswordPage />} />
           <Route path='/reset-password/:token' element={<ResetPasswordPage />} />
-          <Route path='/dashboard' element={<ProtectedRoutes><Dashboard/></ProtectedRoutes>} />
-          <Route path='/explorer' element={<ProtectedRoutes><Explorer/></ProtectedRoutes>} />
-          <Route path='/messages' element={<ProtectedRoutes><Messages/></ProtectedRoutes>} />
-          <Route path='/profile' element={<ProtectedRoutes><ProfilePage/></ProtectedRoutes>} />
-          <Route path='/notifications' element={<ProtectedRoutes><Notification/></ProtectedRoutes>} />
-          <Route path='/settings' element={<ProtectedRoutes><Settings/></ProtectedRoutes>} />
+
+          {/* Protected routes with Layout */}
+          <Route element={<ProtectedRoutes><Layout /></ProtectedRoutes>}>
+            <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/explorer' element={<Explorer />} />
+            <Route path='/messages' element={<Messages />} />
+            <Route path='/profile' element={<ProfilePage />} />
+            <Route path='/notifications' element={<Notification />} />
+            <Route path='/settings' element={<Settings />} />
+          </Route>
+
+          {/* Default route */}
+          <Route path='/' element={<ProtectedRoutes><Layout /><LandingPage /></ProtectedRoutes>} />
         </Routes>
-      </div>
     );
 }
 

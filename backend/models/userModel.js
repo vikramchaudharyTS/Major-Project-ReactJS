@@ -2,7 +2,7 @@ import mongoose, { mongo } from "mongoose";
 
 const userSchema = new mongoose.Schema({
     username: {
-        type: String,
+        type:String,
         unique: true
     },
     name: {
@@ -17,6 +17,15 @@ const userSchema = new mongoose.Schema({
     password:{
         type: String,
         // required: true,
+    },
+    bio:{
+        type:String,
+        default:""
+    },
+
+    links:{
+        type:String,
+        default:""
     },
     firebaseUID: { // New field for Firebase UID
         type: String,
