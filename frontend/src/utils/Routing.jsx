@@ -2,7 +2,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Dashboard from '../Pages/Dashboard';
 import LoadingSpinner from '../components/LoadingSpinner';
-import SignupPage from '../Pages/Register';
+import Register from '../Pages/Register';
 import LoginPage from '../Pages/Login';
 import EmailVerificationPage from '../Pages/EmailVerificationPage';
 import ForgotPasswordPage from '../Pages/ForgotPassworPage'; 
@@ -49,7 +49,7 @@ function Routing() {
         <div className='absolute inset-0 flex items-center justify-center w-full'>
         <Routes>
           <Route path='/' element={<ProtectedRoutes><LandingPage /></ProtectedRoutes>} />
-          <Route path='/signup' element={<SignupPage/>} />
+          <Route path='/signup' element={<Register/>} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/verify-email' element={<EmailVerificationPage />} />
           <Route path='/forgot-password' element={<ForgotPasswordPage />} />

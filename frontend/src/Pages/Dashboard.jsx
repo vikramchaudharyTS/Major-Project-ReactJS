@@ -25,7 +25,7 @@ function Dashboard() {
 
     return (
         <>
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center justify-between w-full'>
                 <div className='w-[13%] h-screen backdrop-blur-sm'>
                     <Sidebar />
                 </div>
@@ -48,7 +48,6 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
-            <h1>Dashboard</h1>
         </>
     );
 }

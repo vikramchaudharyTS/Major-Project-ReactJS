@@ -8,7 +8,7 @@ import MessagesBox from '../components/MessagesBox'
 function Messages() {
   return (
     <>
-      <div className='flex items-center justify-between overflow-hidden'>
+      <div className='flex items-center justify-between overflow-hidden w-full'>
            
            <div className='w-[13%] h-screen backdrop-blur-sm'>
                <Sidebar  />

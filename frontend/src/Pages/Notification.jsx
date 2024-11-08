@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar'
 function Notification() {
   return (
     <>
-    <div className='flex items-center justify-between'>
+    <div className='flex items-center justify-between w-full'>
            
            <div className='w-[13%] h-screen backdrop-blur-sm'>
                <Sidebar  />
