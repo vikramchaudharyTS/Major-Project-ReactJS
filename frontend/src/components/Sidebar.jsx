@@ -50,7 +50,7 @@ function Sidebar() {
             <div>
                 {/* Logo and site name */}
                 <div className="flex items-center justify-between px-2 mb-6 cursor-pointer">
-                    <div className="text-4xl text-blue-500"><GrFingerPrint /></div>
+                    <div className="text-4xl text-green-500"><GrFingerPrint /></div>
                     <h1 className="font-semibold text-2xl text-white">Vault</h1>
                 </div>
                 <hr className="border-zinc-600 mb-6" />

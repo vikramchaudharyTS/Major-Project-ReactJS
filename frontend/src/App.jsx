@@ -15,8 +15,10 @@ function App() {
         <FloatingShape color='bg-emerald-500' size='w-48 h-48' top='70%' left='80%' delay={5} />
         <FloatingShape color='bg-lime-500' size='w-32 h-32' top='40%' left='-10%' delay={2} />
       </div>
-
-      <Routing/>
+      
+      <div className='text-white'>
+        <Routing/>
+      </div>
       
       <Toaster />
     </>
