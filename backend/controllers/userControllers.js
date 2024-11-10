@@ -7,31 +7,38 @@ import { resetPasswordSuccessEmail, sendPasswordResetEmail, sendVerificationEmai
 
 export const signup = async (req, res) => {
     const { email, password, name } = req.body;
+
     try {
         if (!email || !password || !name) {
-            throw new Error("All fields required")
+            throw new Error("All fields required");
         }
-        const userAlreadyExists = await userModel.findOne({ email })
+
+        const userAlreadyExists = await userModel.findOne({ email });
 
         if (userAlreadyExists) {
-            return res.status(400).json({ success: false, message: "User already exists!" })
+            return res.status(400).json({ success: false, message: "User already exists!" });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = await bcrypt.hash(password, 10);
         const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Generate a random username if none is provided
+        const username = req.body.username || `${name.toLowerCase().replace(/\s+/g, '')}${Math.floor(Math.random() * 10000)}`;
 
         const user = new userModel({
             email,
             password: hashedPassword,
             name,
+            username,  // Now you're explicitly setting the username
             verificationToken,
             verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
-        })
-        await user.save()
-        // jwt
-        generateTokenAndSetCookie(res, user._id)
-        // verify email 
-        await sendVerificationEmail(user.email, verificationToken)
+        });
+
+        await user.save();
+
+        // JWT token and email verification
+        generateTokenAndSetCookie(res, user._id);
+        await sendVerificationEmail(user.email, verificationToken);
 
         res.status(201).json({
             success: true,
@@ -40,13 +47,14 @@ export const signup = async (req, res) => {
                 ...user._doc,
                 password: null
             }
-        })
+        });
 
     } catch (error) {
         console.log("EF-B/signup ", error.message);
-        res.status(400).json({ success: false, message: "EF-B/signup " + error.message })
+        res.status(400).json({ success: false, message: "EF-B/signup " + error.message });
     }
-}
+};
+
 
 export const verifyEmail = async (req, res) => {
     const { code } = req.body;
@@ -132,6 +140,23 @@ export const forgotPassword = async (req, res) => {
         res.status(400).json({ success: false, message: "EF-B/password-reset " + error.message })
     }
 }
+
+// Check if the email exists in the database
+export const checkMailExists = async (req, res) => {
+    const { email } = req.body;
+    console.log(email);
+    try {
+        const user = await userModel.findOne({ email });
+        if (user) {
+            return res.json({ exists: true });
+        } else {
+            return res.json({ exists: false });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: "Error checking email" });
+    }
+};
+
 
 export const resetPassword = async (req, res) => {
     const { newPassword, confirmNewPassword } = req.body;

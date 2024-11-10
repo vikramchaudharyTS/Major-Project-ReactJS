@@ -53,12 +53,11 @@ function SuggestedUsers() {
                         <h1 className='text-md overflow-hidden w-48 whitespace-nowrap text-ellipsis'>
                             {user.name}
                         </h1>
-                        <button onClick={() => handleFriendFunction(user.id)}>
-                            <SingleButton 
-                                data={friendStatus[user.id] ? addFriends : addedFriend} 
-                                customClasses={customButtonStyles}
-                            />
-                        </button>
+                        <SingleButton 
+                            data={friendStatus[user.id] ? addFriends : addedFriend} 
+                            customClasses={customButtonStyles}
+                            onClick={() => handleFriendFunction(user.id)}  // Pass the onClick handler
+                        />
                     </div>
                 </div>
             ))}

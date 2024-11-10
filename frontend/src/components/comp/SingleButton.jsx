@@ -1,15 +1,16 @@
 import React from 'react';
 
-function SingleButton({ data, customClasses }) {
+function SingleButton({ data, customClasses, onClick }) {
     const { color, heading, icon, hoverColor } = data;
 
     return (
-        <div
+        <button
             className={`px-3 py-2 items-center justify-center gap-3 text-md w-52 rounded-lg flex cursor-pointer ${color} ${hoverColor} hover:font-semibold ${customClasses}`}
+            onClick={onClick}  // Apply the onClick handler to the button
         >
             <div>{icon}</div>
-            <button>{heading}</button> {/* Display the correct button text */}
-        </div>
+            {heading} {/* Display the correct button text */}
+        </button>
     );
 }
 

@@ -1,79 +1,75 @@
 //@ts-nocheck
 import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "./emailTemplates.js"
-import { mailtrapClient, sender } from "./mailtrap.config.js"
+import { transporter } from "./nodemailer.config.js"
+import dotenv from 'dotenv' 
 
+dotenv.config()
 
+// Function to send verification email
 export const sendVerificationEmail = async (email, verificationToken) => {
     const recipients = [{ email }]
-
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipients,
+        const response = await transporter.sendMail({
+            from: process.env.EMAIL_AUTH_USER,  // Sender email from .env
+            to: email,
             subject: "Verify your email",
             html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationToken),
             category: "Email Verification"
         })
-
-        console.log("Verification Email send successfully", response);
+        console.log("Verification Email sent successfully", response);
     } catch (error) {
         console.log("EF-B/sendVerificationEmail ", error.message);
-        res.status(400).json({ success: false, message: "EF-B/sendVerificationEmail " + error.message })
     }
 }
 
+// Function to send welcome email
 export const sendWelcomeEmail = async (email, name) => {
     const recipients = [{ email }]
-
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipients,
-            template_uuid: "25e70844-ac5b-412c-bf83-0ac672d41eda",
-            template_variables: {
-                "company_info_name": "the_secret_room",
-                "name": name
-            }
+        const response = await transporter.sendMail({
+            from: process.env.EMAIL_AUTH_USER,  // Sender email from .env
+            to: email,
+            subject: "Welcome to the Secret Room",
+            html: `<h1>Welcome, ${name}!</h1><p>Thank you for joining our community.</p>`,
+            category: "Welcome"
         })
-        console.log("Welcome Email send sucessfully", response);
+        console.log("Welcome Email sent successfully", response);
     } catch (error) {
         console.log("EF-B/sendWelcomeEmail", error.message);
-        throw new Error("Error sending welcome email", error.message)
     }
-
 }
 
+// Function to send password reset email
 export const sendPasswordResetEmail = async (email, url) => {
     const recipients = [{ email }]
-
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipients,
+        const response = await transporter.sendMail({
+            from: process.env.EMAIL_AUTH_USER,  // Sender email from .env
+            to: email,
             subject: "Reset your password",
             html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", url),
-            category: "reset password"
+            category: "Password Reset"
         })
-        console.log("Reset password email send successfully", response);
+        console.log("Reset password email sent successfully", response);
     } catch (error) {
-        console.log("EF-B/resetPasswordEmail ", error.message);
-        res.status(400).json({ success: false, message: "EF-B/resetPasswordEmail " + error.message })
+        console.log("EF-B/sendPasswordResetEmail ", error.message);
     }
 }
 
+// Function to send password reset success email
 export const resetPasswordSuccessEmail = async (email) => {
     const recipients = [{ email }]
     try {
-        const response = await mailtrapClient.send({
-            from: sender,
-            to: recipients,
-            subject: "Reset password successfull",
+        const response = await transporter.sendMail({
+            from: process.env.EMAIL_AUTH_USER,  // Sender email from .env
+            to: email,
+            subject: "Reset password successful",
             html: PASSWORD_RESET_SUCCESS_TEMPLATE,
-            category: "reset password"
+            category: "Password Reset"
         })
-        console.log("Reset password successfully", response);
+        console.log("Password reset success email sent successfully", response);
     } catch (error) {
         console.log("EF-B/resetPasswordSuccessEmail ", error.message);
-        res.status(400).json({ success: false, message: "EF-B/resetPasswordSuccessEmail " + error.message })
     }
 }
+

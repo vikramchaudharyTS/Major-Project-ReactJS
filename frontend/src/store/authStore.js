@@ -19,7 +19,7 @@ export const useAuthStore = create((set)=>({
         set({ isLoading: true, error: null });
         try {
             const response = await axios.post(`${API_URL}/signup`, { email, password, name });
-            console.log("Signup response:", response);
+            // console.log("Signup response:", response);
             set({ user: response.data.user, isAuthenticated: true, isLoading: false });
         } catch (error) {
             console.error("EF-F/authStore Signup error:", error);  // Debugging line
@@ -28,7 +28,7 @@ export const useAuthStore = create((set)=>({
             throw error;
         }
     },
-    
+
     login: async (email, password) => {
         set({ isLoading: true, error: null });
         // console.log("Logging in with:", email, password);  // Debugging line
@@ -88,20 +88,33 @@ export const useAuthStore = create((set)=>({
             });
         }
     },
+
     forgotPassword: async (email) => {
-		set({ isLoading: true, error: null });
-		try {
-			const response = await axios.post(`${API_URL}/forgot-password`, { email });
-			set({ message: response.data.message, isLoading: false });
-		} catch (error) {
+        set({ isLoading: true, error: null });
+        try {
+
+            // Step 1: Check if the email exists in the database
+            const user = await axios.post(`${API_URL}/find-user-by-email`, { email });
+
+            // Step 2: If email exists, send the reset password email
+            if (user.data.exists) {
+                const response = await axios.post(`${API_URL}/forgot-password`, { email });
+                set({ message: "Password reset email sent", isLoading: false });
+            } else {
+                set({
+                    isLoading: false,
+                    error: "Email not found in our database",
+                });
+            }
+        } catch (error) {
             console.error("EF-F/authStore forgotPassword error:", error);  // Debugging line
-			set({
-				isLoading: false,
-				error: error.response.data.message || "Error sending reset password email",
-			});
-			throw error;
-		}
-	},
+            set({
+                isLoading: false,
+                error: error.response?.data?.message || "Error sending reset password email",
+            });
+        }
+    },
+    
 	resetPassword: async (token, password, confirmPassword) => {
         set({ isLoading: true, error: null });
         try {

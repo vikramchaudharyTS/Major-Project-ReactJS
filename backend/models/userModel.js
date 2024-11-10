@@ -3,7 +3,8 @@ import mongoose, { mongo } from "mongoose";
 const userSchema = new mongoose.Schema({
     username: {
         type:String,
-        unique: true
+        unique: true,
+        sparse: true
     },
     name: {
         type: String,
@@ -22,14 +23,9 @@ const userSchema = new mongoose.Schema({
         type:String,
         default:""
     },
-
     links:{
         type:String,
         default:""
-    },
-    firebaseUID: { // New field for Firebase UID
-        type: String,
-        unique: true
     },
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
