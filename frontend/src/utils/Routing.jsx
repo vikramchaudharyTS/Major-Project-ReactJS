@@ -4,7 +4,7 @@ import Dashboard from '../Pages/Dashboard';
 import Register from '../Pages/Register';
 import LoginPage from '../Pages/Login';
 import EmailVerificationPage from '../Pages/EmailVerificationPage';
-import ForgotPasswordPage from '../Pages/ForgotPassworPage'; 
+import ForgotPasswordPage from '../Pages/ForgotPasswordPage'; 
 import ResetPasswordPage from '../Pages/ResetPasswordPage';
 import { useAuthStore } from '../store/authStore';
 import { useEffect } from 'react';
@@ -48,9 +48,9 @@ function Routing() {
     return (
         <Routes>
           {/* Public routes */}
-
-          <Route path='/signup' element={<Register/>} />
-          <Route path='/login' element={<LoginPage />} />
+          <Route path='/' element={<RedirectAuthenticatedUser><LandingPage /></RedirectAuthenticatedUser>} />
+          <Route element={<RedirectAuthenticatedUser><Register /></RedirectAuthenticatedUser>} path='/signup' />
+          <Route element={<RedirectAuthenticatedUser><LoginPage /></RedirectAuthenticatedUser>} path='/login' />
           <Route path='/verify-email' element={<EmailVerificationPage />} />
           <Route path='/forgot-password' element={<ForgotPasswordPage />} />
           <Route path='/reset-password/:token' element={<ResetPasswordPage />} />
@@ -64,9 +64,6 @@ function Routing() {
             <Route path='/notifications' element={<Notification />} />
             <Route path='/settings' element={<Settings />} />
           </Route>
-
-          {/* Default route */}
-          <Route path='/' element={<ProtectedRoutes><Layout /><LandingPage /></ProtectedRoutes>} />
         </Routes>
     );
 }

@@ -7,7 +7,7 @@ const Layout = () => {
     return (
         <div className='flex h-full overflow-hidden'>
             {/* Sidebar */}
-            <div className='w-[13%] h-screen'>
+            <div className='w-[13%] py-2 h-screen'>
                 <Sidebar />
             </div>
 
