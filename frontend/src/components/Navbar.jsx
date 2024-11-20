@@ -1,13 +1,31 @@
 //@ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { IoCreateOutline } from "react-icons/io5";
 import CreatePost from './CreatePost';
 import { useAuthStore } from "../store/authStore.js";
+import axiosInstance from '../utils/axios'; // Assuming you have the axios instance set up
 
 function Navbar() {
   const [isCreatePostActive, setIsCreatePostActive] = useState(false);
-  const { user, isAuthenticated } = useAuthStore(); // Access user and isAuthenticated from Zustand store
+  
+  const { isAuthenticated } = useAuthStore(); // Assuming you have a setUserDetails function in your store
+  const [user, setUserDetails] = useState('')
+  // Fetch current user details from backend
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axiosInstance.get('/users/profile'); // Endpoint to fetch user details
+      setUserDetails(response.data); // Update Zustand store with user data
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchUserDetails(); // Fetch details if the user is authenticated
+    }
+  }, [isAuthenticated]); // Runs when isAuthenticated changes
 
   return (
     <>
@@ -31,7 +49,7 @@ function Navbar() {
                 src={user.img || '/default-profile.png'} // Use a default profile image if `user.img` is undefined
                 alt="profile img"
               />
-              <h1>{user.username || "User"}</h1>
+              <h1>{user.username || "User"}</h1> {/* Always display the username */}
             </>
           ) : (
             <h1>Loading...</h1>
@@ -39,7 +57,12 @@ function Navbar() {
           <MdKeyboardArrowDown className='w-10 h-10 hover:bg-zinc-500/20 rounded-full text-sm p-3' />
         </div>
       </nav>
-      {isCreatePostActive && <CreatePost isCreatePostActive={isCreatePostActive} setIsCreatePostActive={setIsCreatePostActive} />}
+      {isCreatePostActive && (
+        <CreatePost
+          isCreatePostActive={isCreatePostActive}
+          setIsCreatePostActive={setIsCreatePostActive}
+        />
+      )}
     </>
   );
 }

@@ -1,4 +1,0 @@
-// firebaseUID: { // New field for Firebase UID
-    //     type: String,
-    //     unique: true
-    // },

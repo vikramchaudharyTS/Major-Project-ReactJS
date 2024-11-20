@@ -1,14 +1,31 @@
 import { v2 as cloudinary } from 'cloudinary';
 import notificationModel from "../models/notification.model.js";
-import userModel from "../models/userModel.js";
+import {userModel} from "../models/userModel.js";
 import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 
 // Get User Profile
 export const getUserProfile = async (req, res) => {
-    const { username } = req.params;
+    const userId = req.userId;
 
     try {
-        const user = await userModel.findOne({ username }).select("-password");
+        const user = await userModel.findById(userId).select("-password");
+        if (!user) {
+            return res.status(404).json({ error: "No user found!" });
+        }
+        res.status(200).json(user);
+
+    } catch (error) {
+        console.log("EF-B/getUserProfile controller" + error.message);
+        res.status(500).json({ error: "error getting user details!" });
+    }
+};
+
+export const getAnotherUserProfile = async (req, res) => {
+    const { user: userId } = req.params;
+    
+    try {
+        const user = await userModel.findById(userId).select("-password");
         if (!user) {
             return res.status(404).json({ error: "No user found!" });
         }
@@ -23,28 +40,38 @@ export const getUserProfile = async (req, res) => {
 // Follow or Unfollow User
 export const followUnfollowUser = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { userId } = req.params;  // Access the correct route parameter
         const Id = req.userId;
-        const userToModify = await userModel.findById(id);
-        const currentUser = await userModel.findById(Id);
 
-        if (id === Id) return res.status(400).json({ error: "You can't follow or unfollow yourself!" });
+        // Validate IDs as ObjectId instances
+        if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(Id)) {
+            return res.status(400).json({ error: "Invalid user ID!" });
+        }
 
-        if (!userToModify || !currentUser) return res.status(400).json({ error: "User not found!" });
+        // Prevent the user from following themselves
+        if (userId === Id) {
+            return res.status(400).json({ error: "You cannot follow yourself!" });
+        }
 
-        const isFollowing = currentUser.following.includes(id);
+        const userToModify = await userModel.findById(new mongoose.Types.ObjectId(userId));
+        const currentUser = await userModel.findById(new mongoose.Types.ObjectId(Id));
+
+        if (!userToModify || !currentUser) {
+            return res.status(400).json({ error: "User not found!" });
+        }
+
+        const isFollowing = currentUser.following.includes(userId);
 
         if (isFollowing) {
             // Unfollow the user
-            await userModel.findByIdAndUpdate(id, { $pull: { followers: Id } });
-            await userModel.findByIdAndUpdate(Id, { $pull: { following: id } });
+            await userModel.findByIdAndUpdate(userId, { $pull: { followers: Id } });
+            await userModel.findByIdAndUpdate(Id, { $pull: { following: userId } });
 
-            res.status(200).json({ message: "User unfollowed successfully", userId: id });
-
+            res.status(200).json({ message: "User unfollowed successfully", userId });
         } else {
             // Follow the user
-            await userModel.findByIdAndUpdate(id, { $push: { followers: Id } });
-            await userModel.findByIdAndUpdate(Id, { $push: { following: id } });
+            await userModel.findByIdAndUpdate(userId, { $push: { followers: Id } });
+            await userModel.findByIdAndUpdate(Id, { $push: { following: userId } });
 
             const newNotification = new notificationModel({
                 type: "follow",
@@ -54,40 +81,40 @@ export const followUnfollowUser = async (req, res) => {
 
             await newNotification.save();
 
-            res.status(200).json({ message: "User followed successfully", userId: id });
+            res.status(200).json({ message: "User followed successfully", userId });
         }
     } catch (error) {
-        console.log("EF-B/followUnfollowUser controller" + error.message);
-        res.status(500).json({ error: "error following user!" });
+        console.log("EF-B/followUnfollowUser controller: " + error.message);
+        res.status(500).json({ error: "Error following/unfollowing user: " + error.message });
     }
 };
 
 // Get Suggested Users
 export const getSuggestedUsers = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = new mongoose.Types.ObjectId(req.userId); // Convert to ObjectId
 
+        // Retrieve the following list for the current user
         const userFollowedByMe = await userModel.findById(userId).select("following");
 
+        // Suggested users excluding the current user and already followed users
         const users = await userModel.aggregate([
             {
                 $match: {
-                    _id: { $ne: userId }
+                    _id: { $ne: userId, $nin: userFollowedByMe.following } // Exclude current user and followed users
                 }
-            }, 
-            { $sample: { size: 10 } }
+            },
+            { $sample: { size: 10 } }, // Randomly sample 10 users
+            { $project: { password: 0 } } // Exclude the password field
         ]);
 
-        const filteredUsers = users.filter(user => !userFollowedByMe.following.includes(user._id));
-        const suggestedUsers = filteredUsers.slice(0, 4);
-
-        suggestedUsers.forEach(user => user.password = null);
+        // Limit to 4 users for suggestions
+        const suggestedUsers = users.slice(0, 4);
 
         res.status(200).json(suggestedUsers);
-
     } catch (error) {
-        console.log("EF-B/getSuggestedUser controller" + error.message);
-        res.status(500).json({ error: "error suggesting user!" });
+        console.log("EF-B/getSuggestedUser controller: " + error.message);
+        res.status(500).json({ error: "Error suggesting user!" });
     }
 };
 

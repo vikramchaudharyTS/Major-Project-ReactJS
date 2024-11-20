@@ -1,24 +1,25 @@
 //@ts-nocheck
 import {create} from 'zustand'
-import axios from 'axios'
+import axiosInstance from '../utils/axios';
+import { API_USER_ACTIONS_URL, API_AUTH_URL } from '../utils/urls';
 
-
-const API_URL = 'http://localhost:3000/api/auth'
-
-axios.defaults.withCredentials = true
 
 export const useAuthStore = create((set)=>({
-
-    user:null,
+ 
+    user: null,
     isAuthenticated: false,
     error: null,
     isLoading: false,
     isCheckingAuth: true,
+    suggestedUsers: [],
+    friendStatus: {},
+    isFetchingSuggestedUsers: false,
+    isTogglingFollowStatus: false,
 
     signup: async(email, password, name) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/signup`, { email, password, name });
+            const response = await axiosInstance.post(`${API_AUTH_URL}/signup`, { email, password, name });
             // console.log("Signup response:", response);
             set({ user: response.data.user, isAuthenticated: true, isLoading: false });
         } catch (error) {
@@ -33,7 +34,7 @@ export const useAuthStore = create((set)=>({
         set({ isLoading: true, error: null });
         // console.log("Logging in with:", email, password);  // Debugging line
         try {
-            const response = await axios.post(`${API_URL}/login`, { email, password });
+            const response = await axiosInstance.post(`${API_AUTH_URL}/login`, { email, password });
             // console.log("Login response:", response);  // Debugging line
             set({ user: response.data.user, isAuthenticated: true, isLoading: false, error: null });
         } catch (error) {
@@ -47,7 +48,7 @@ export const useAuthStore = create((set)=>({
     logout: async()=>{
         set({isLoading: true, error: null})
         try {
-            await axios.post(`${API_URL}/logout`)
+            await axiosInstance.post(`${API_AUTH_URL}/logout`)
             set({user:null, isAuthenticated: false, error:null  , isLoading: false})
         } catch (error) {
             console.error("EF-F/authStore Logout error:", error);  // Debugging line
@@ -59,7 +60,7 @@ export const useAuthStore = create((set)=>({
     verifyEmail: async (code)=>{
         set({isLoading: true, error:null})
         try {
-            const response = await axios.post(`${API_URL}/verify-email`, {code})
+            const response = await axiosInstance.post(`${API_AUTH_URL}/verify-email`, {code})
             set({user:response.data.user, isAuthenticated: true, isLoading: false})
             return response.data
         } catch (error) {
@@ -72,7 +73,7 @@ export const useAuthStore = create((set)=>({
     checkAuth: async () => {
         set({ isCheckingAuth: true, error: null });
         try {
-            const response = await axios.get(`${API_URL}/check-auth`);
+            const response = await axiosInstance.get(`${API_AUTH_URL}/check-auth`);
             set({
                 user: response.data.user,
                 isAuthenticated: true,
@@ -94,11 +95,11 @@ export const useAuthStore = create((set)=>({
         try {
 
             // Step 1: Check if the email exists in the database
-            const user = await axios.post(`${API_URL}/find-user-by-email`, { email });
+            const user = await axiosInstance.post(`${API_AUTH_URL}/find-user-by-email`, { email });
 
             // Step 2: If email exists, send the reset password email
             if (user.data.exists) {
-                const response = await axios.post(`${API_URL}/forgot-password`, { email });
+                const response = await axiosInstance.post(`${API_AUTH_URL}/forgot-password`, { email });
                 set({ message: "Password reset email sent", isLoading: false });
             } else {
                 set({
@@ -118,7 +119,7 @@ export const useAuthStore = create((set)=>({
 	resetPassword: async (token, password, confirmPassword) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await axios.post(`${API_URL}/reset-password/${token}`, {
+            const response = await axiosInstance.post(`${API_AUTH_URL}/reset-password/${token}`, {
                 newPassword: password,
                 confirmNewPassword: confirmPassword
             });
@@ -131,7 +132,65 @@ export const useAuthStore = create((set)=>({
             });
             throw error;
         }
-    }
+    },
+
+    fetchSuggestedUsers: async () => {
+        set({ isFetchingSuggestedUsers: true, error: null });
+        try {
+            const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/suggested`);
+            const initialStatus = response.data.reduce((acc, user) => {
+                acc[user._id] = false;
+                return acc;
+            }, {});
+            set({
+                suggestedUsers: response.data,
+                friendStatus: initialStatus,
+                isFetchingSuggestedUsers: false,
+            });
+        } catch (error) {
+            console.error("Error fetching suggested users:", error);
+            set({ error: "Error fetching suggested users", isFetchingSuggestedUsers: false });
+        }
+    },
+
+    toggleFollowStatus: async (userId) => {
+        const currentStatus = useAuthStore.getState().friendStatus[userId];
+        if (currentStatus === undefined) return; // Avoid toggling if status is undefined
+      
+        set({ isTogglingFollowStatus: true });
+        try {
+          await axiosInstance.post(`${API_USER_ACTIONS_URL}/followUnfollowUser/${userId}`);
+          set((state) => ({
+            friendStatus: { ...state.friendStatus, [userId]: !currentStatus },
+            isTogglingFollowStatus: false,
+          }));
+        } catch (error) {
+          console.error("Error toggling follow status:", error);
+          set({ error: "Error toggling follow status", isTogglingFollowStatus: false });
+        }
+      },
+    fetchUserData: async () => {
+        if (!useAuthStore.getState().user) {
+          set({ isLoading: true, error: null });
+          try {
+            const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile`);
+            set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+          } catch (error) {
+            set({ error: 'Error fetching user data', isLoading: false });
+          }
+        }
+      },
+      fetchAnotherUserData: async (userId) => {
+        if (!userId) return;  // Check if userId exists
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile/${userId}`);  // Use the userId in the request
+            set({ user: response.data, isAuthenticated: true, isLoading: false });
+        } catch (error) {
+            set({ error: 'Error fetching user data', isLoading: false });
+        }
+    },
+    
     
 }))
 

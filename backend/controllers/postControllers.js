@@ -1,182 +1,232 @@
-const router = require("express").Router()
-const postModel = require("../models/postModel");
-const userModel = require("../models/userModel");
-const multer = require('multer');
+import { uploadImageToS3 } from "../config/s3/s3.js";
+import { postModel, commentModel } from "../models/postModel.js";
+import { userModel } from "../models/userModel.js";  // Import userModel
 
-// Set up multer to store files in memory
-const storage = multer.memoryStorage(); // Store file in memory
-const upload = multer({ storage: storage });
-
-
-router.post("/create/:userid", upload.single('img'), async (req, res) => {
+/// --- Post Controllers ---
+export const createPost = async (req, res) => {
+    const userId = req.userId
     try {
-        const { desc } = req.body;
-        // Create a new post
-        const newPost = new postModel({
-            userId: req.params.userid,
-            desc: desc,
-            img: req.file ? {
-                data: req.file.buffer,       
-                contentType: req.file.mimetype
-            } : undefined 
+        const {description, tags, isPublic, location } = req.body;
+        const imageUrls = [];
+        console.log("Received files:", req.files);  // Check file upload
+        console.log("Received description:", req.body.description); // Check form data
+        // Upload each image to S3 and collect the URLs
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                const imageUrl = await uploadImageToS3(file);
+                imageUrls.push(imageUrl);
+            }
+        }
+
+        // Create the new post in the database
+        const newPost = await postModel.create({
+            userId,
+            description,
+            images: imageUrls,
+            tags,
+            isPublic,
+            location,
         });
 
-        await newPost.save();
-        // Update user's posts
-        await userModel.updateOne(
-            { _id: req.params.userid },
-            { $push: { myPosts: newPost._id.toString() } },
-            { new: true }
-        );
+        await userModel.findByIdAndUpdate(userId, {
+            $push: { myPosts: newPost._id },  // Add post ID to myPosts
+        });
 
-        const referer = req.headers.referer || '';
-        if (referer.includes("/profile")) {
-            res.redirect("/profile");
-        } else {
-            res.redirect("/dashboard");
-        }
+        res.status(201).json(newPost);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-});
+};
 
-router.get('/images/:id', async (req, res) => {
+export const deletePost = async (req, res) => {
     try {
-        const post = await postModel.findById(req.params.id);
-        if (post && post.img && post.img.data) {
-            res.set('Content-Type', post.img.contentType);
-            res.send(post.img.data);
+        const { id } = req.params;
+        const { userId } = req.body;
+
+        const deletedPost = await postModel.findByIdAndDelete(id);
+        if (!deletedPost) return res.status(404).json({ message: "Post not found" });
+
+        // Delete images from S3 (if necessary)
+        for (const image of deletedPost.images) {
+            await deleteImageFromS3(image);
+        }
+
+        // Remove the deleted post ID from the user's myPosts array
+        await userModel.findByIdAndUpdate(userId, {
+            $pull: { myPosts: deletedPost._id },  // Remove post ID from myPosts
+        });
+
+        res.status(200).json({ message: "Post deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const getPosts = async (req, res) => {
+    try {
+        const { page = 1, limit = 10 } = req.query; // Default values for pagination
+        const posts = await postModel
+            .find()
+            .populate("userId", "username name profileImg") // Populate user info from userModel
+            .select("userId description images createdAt location tags") // Only retrieve required post fields
+            .sort({ createdAt: -1 }) // Sort by newest posts first
+            .skip((page - 1) * limit) // Pagination logic
+            .limit(parseInt(limit)); // Limit number of posts per page
+
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const getPostById = async (req, res) => {
+    try {
+        // Assuming the user's ID is available in req.user from the verifyToken middleware
+        const userId = req.userId;
+
+        // Fetch all posts by the logged-in user
+        const posts = await postModel
+            .find({ userId })
+            .populate("userId", "username name profileImg");
+
+        if (!posts.length) {
+            return res.status(404).json({ message: "No posts found for this user" });
+        }
+
+        // Optionally, format the data if needed
+        const formattedPosts = posts.map((post) => ({
+            id: post._id,
+            userId: post.userId,
+            description: post.description,
+            images: post.images,
+            likes: post.likes.length,
+            comments: post.comments,
+            createdAt: post.createdAt,
+        }));
+
+        res.status(200).json(formattedPosts);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+export const likePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
+
+        const post = await postModel.findById(id);
+        if (!post) return res.status(404).json({ message: "Post not found" });
+
+        const isLiked = post.likes.includes(userId);
+        if (isLiked) {
+            post.likes = post.likes.filter((id) => id.toString() !== userId);
         } else {
-            res.status(404).send('Image not found');
+            post.likes.push(userId);
         }
+
+        await post.save();
+        res.status(200).json(post);
     } catch (error) {
-        res.status(500).send('Server error');
+        res.status(500).json({ error: error.message });
     }
-});
+};
 
-
-router.post("/:id/comments", async (req, res) => {
-    const postId = req.params.id;
-    const { text } = req.body;
-    const userId = req.session.userId;
+export const savePost = async (req, res) => {
     try {
-        // Check if the user exists
-        const user = await userModel.findById(userId);
-        if (!user) {
-            return res.status(401).send("You don't exist. You need to login first.");
+        const { id } = req.params;
+        const { userId } = req.body;
+
+        const post = await postModel.findById(id);
+        if (!post) return res.status(404).json({ message: "Post not found" });
+
+        const isSaved = post.savedBy.includes(userId);
+        if (isSaved) {
+            post.savedBy = post.savedBy.filter((id) => id.toString() !== userId);
+        } else {
+            post.savedBy.push(userId);
         }
-        // Find and update the post with the new comment
-        const post = await postModel.findByIdAndUpdate(
-            postId,
-            {
-                $push: {
-                    comments: {
-                        userId,
-                        text,
-                        timestamp: new Date()
-                    }
-                }
-            },
-            { new: true }
-        );
-        if (!post) {
-            return res.status(404).json({ error: "Post not found" });
-        }
-        // Redirect to the dashboard after updating
-        res.redirect("/dashboard");
+
+        await post.save();
+        res.status(200).json(post);
     } catch (error) {
-        console.error(error);
-        res.status(500).send("Error adding comment");
+        res.status(500).json({ error: error.message });
     }
-});
+};
 
-//delete a post
-router.post("/:id/comments/delete", async (req, res) => {
-    await postModel.findByIdAndDelete(req.params.id)
-    res.redirect("/dashboard")
-})
+/// --- Comment Controllers ---
+export const addComment = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const { userId, commentText } = req.body;
 
-// ---------------Likes----------------
+        const newComment = await commentModel.create({ postId, userId, commentText });
+        const post = await postModel.findById(postId);
 
-router.post("/like/:id", async (req, res) => {
-    const user = await userModel.findById(req.session.userId)
-    const post = await postModel.findById(req.params.id)
+        if (!post) return res.status(404).json({ message: "Post not found" });
 
-    try{
-        if(post.likes.includes(user._id)){
-            await postModel.updateOne({_id: req.params.id}, {
-                $pull: {likes: user._id}
-            })
-            res.redirect("/dashboard")
-        }else{
-            await postModel.updateOne({_id: req.params.id}, {
-                $push: {likes: user._id}
-            })
-            res.redirect("/dashboard")
+        post.comments.push(newComment._id);
+        await post.save();
+
+        res.status(201).json(newComment);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const getCommentsByPost = async (req, res) => {
+    try {
+        const { postId } = req.params;
+        const comments = await commentModel.find({ postId }).populate("userId", "username profileImg");
+        res.status(200).json(comments);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const likeComment = async (req, res) => {
+    try {
+        const { commentId } = req.params;
+        const { userId } = req.body;
+
+        const comment = await commentModel.findById(commentId);
+        if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+        const isLiked = comment.likes.includes(userId);
+        if (isLiked) {
+            comment.likes = comment.likes.filter((id) => id.toString() !== userId);
+        } else {
+            comment.likes.push(userId);
         }
+
+        await comment.save();
+        res.status(200).json(comment);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    catch(error){
-        res.send(error)
+};
+
+export const replyToComment = async (req, res) => {
+    try {
+        const { commentId } = req.params;
+        const { userId, replyText } = req.body;
+
+        const comment = await commentModel.findById(commentId);
+        if (!comment) return res.status(404).json({ message: "Comment not found" });
+
+        const newReply = {
+            userId,
+            replyText,
+            createdAt: new Date(),
+        };
+
+        comment.replies.push(newReply);
+        await comment.save();
+
+        res.status(201).json(comment);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-})
-
-// router.post("/like/:id", async (req, res) => {
-//     const user = await userModel.findById(req.session.userId);
-//     const post = await postModel.findById(req.params.id);
-
-//     try {
-//         if (post.likes.includes(user._id)) {
-//             await postModel.updateOne({ _id: req.params.id }, {
-//                 $pull: { likes: user._id }
-//             });
-//             return res.json({ liked: false, likesCount: post.likes.length - 1 });
-//         } else {
-//             await postModel.updateOne({ _id: req.params.id }, {
-//                 $push: { likes: user._id }
-//             });
-//             return res.json({ liked: true, likesCount: post.likes.length + 1 });
-//         }
-//     } catch (error) {
-//         return res.status(500).json({ error: error.message });
-//     }
-// });
-
-
-// ---------------Saved posts----------------
-router.post("/save/:id", async (req, res) => {
-    const user = await userModel.findById(req.session.userId)
-    const post = await postModel.findById(req.params.id)
-
-    if(user.savedPosts.includes(post._id)){
-        await userModel.updateOne({_id: req.session.userId}, {
-            $pull: {savedPosts: post._id}
-        })
-        res.redirect("/dashboard")
-    }else{
-        await userModel.updateOne({_id: req.session.userId}, {
-            $push: {savedPosts: post._id}
-        })
-        res.redirect("/dashboard")
-    }
-})
-
-// -----------------delete post---------------
-router.post("/delete/:id", async (req, res) => {
-    const post = await postModel.findById(req.params.id)
-    const user = await userModel.findById(req.session.userId)
-    if(post.userId.toString() === user._id.toString()){
-        await postModel.findByIdAndDelete(req.params.id)
-        await userModel.updateOne({_id: req.session.userId}, {
-            $pull: {myPosts: req.params.id}
-        })
-        res.redirect("/dashboard")
-    }else{
-        res.send("You can't delete this post")
-    }
-})
-
-
-
-
-
-module.exports = router
+};

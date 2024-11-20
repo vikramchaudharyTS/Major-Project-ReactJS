@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+//@ts-nocheck
 import React from 'react';
 import FloatingShape from './components/FloatingShape';
 import Routing from './utils/Routing.jsx';
@@ -13,7 +15,6 @@ function App() {
           <FloatingShape color='bg-lime-500' size='w-32 h-32' top='40%' left='-10%' delay={2} />
         </div>
       </div> */}
-
       <div className='bg-zinc-900 text-white w-full h-full'>
         <Routing />
       </div>

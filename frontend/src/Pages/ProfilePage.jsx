@@ -15,7 +15,7 @@ function ProfilePage() {
                         <ProfileBlock />
                       </div>
                       {/* posts block */}
-                      <div className='overflow-y-scroll w-[70%] flex flex-wrap gap-14 p-16 items-start justify-start'>                      
+                      <div className='overflow-y-scroll w-[72%] flex flex-wrap gap-14 p-16 items-start justify-start'>                      
                         <AccountPosts />
                         <AccountPosts />
                         <AccountPosts />

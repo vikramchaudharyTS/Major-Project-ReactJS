@@ -30,7 +30,7 @@ const RedirectAuthenticatedUser = ({ children }) => {
     const location = useLocation(); // Track current location
 
     // If user is authenticated and trying to access login or signup, redirect to dashboard
-    if (isAuthenticated && user?.isVerified && (location.pathname === '/login' || location.pathname === '/signup')) {
+    if (isAuthenticated && user?.isVerified && (location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/')) {
         return <Navigate to='/dashboard' replace />;
     }
 
@@ -62,6 +62,7 @@ function Routing() {
 
           {/* Protected routes with Layout */}
           <Route element={<ProtectedRoutes><Layout /></ProtectedRoutes>}>
+            <Route path='/profile/:userId' element={<ProfilePage />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/explorer' element={<Explorer />} />
             <Route path='/messages' element={<Messages />} />

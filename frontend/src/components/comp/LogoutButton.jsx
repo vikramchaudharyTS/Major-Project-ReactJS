@@ -4,11 +4,12 @@ import { motion } from "framer-motion";
 import { LogOut } from "lucide-react"; // Optional icon
 
 const LogoutButton = () => {
-  const { logout, isLoading } = useAuthStore();
+  const { logout, isLoading, user } = useAuthStore();
   
   const handleLogout = async () => {
     try {
       await logout();
+      console.log(user);
     } catch (error) {
       console.error("Logout error:", error);
     }
