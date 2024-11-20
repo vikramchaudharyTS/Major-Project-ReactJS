@@ -38,6 +38,7 @@ export const uploadImageToS3 = async (file) => {
         Key: fileKey,
         Body: file.buffer,
         ContentType: file.mimetype,
+       
     };
 
     try {
@@ -69,3 +70,5 @@ export const deleteImageFromS3 = async (imageUrl) => {
         throw new Error("Failed to delete image from S3");
     }
 };
+
+    
