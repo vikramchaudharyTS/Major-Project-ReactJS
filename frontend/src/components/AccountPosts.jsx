@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { usePostStore } from '../store/postsStore.js'; // Import Zustand store
 import axiosInstance from '../utils/axios.js';
 
 function AccountPosts() {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Get state and actions from the Zustand store
+  const { posts, loading, error, setPosts, setLoading, setError } = usePostStore();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
+        setLoading(true); // Set loading state to true when fetching starts
         const response = await axiosInstance.get('/posts');
-        setPosts(response.data);
+        setPosts(response.data); // Set the posts data from the response
       } catch (err) {
-        setError(err.response?.data?.message || 'Something went wrong');
+        setError(err.response?.data?.message || 'Something went wrong'); // Set error state
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading state to false after fetching is complete
       }
     };
 
     fetchPosts();
-  }, []);
+  }, [setPosts, setLoading, setError]); // Empty dependency array means it only runs on mount
 
   if (loading) {
     return <div className="text-center text-lg">Loading...</div>;
@@ -33,7 +34,7 @@ function AccountPosts() {
     <div className="grid grid-cols-3 gap-4 p-4">
       {posts.map((post) => (
         <div
-          key={post.id}
+          key={post}
           className="hover:scale-105 transition transform rounded overflow-hidden shadow-lg"
         >
           <img

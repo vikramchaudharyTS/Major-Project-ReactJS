@@ -1,32 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import axiosInstance from "../utils/axios.js";
 import { FcLike } from "react-icons/fc";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { GiSaveArrow } from "react-icons/gi";
 import { AiOutlineMessage } from "react-icons/ai";
 import { useAuthStore } from "../store/authStore.js";
+import { usePostStore } from "../store/postsStore.js";
 
 const Posts = () => {
-  const [posts, setPosts] = useState([]);
-  const [error, setError] = useState(null);
   const { user } = useAuthStore();
+  const { posts, setPosts, addPost } = usePostStore();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axiosInstance.get(`/posts/${user._id}`);
-        setPosts(response.data);
+        setPosts(response.data);  // Use Zustand to set the posts
       } catch (err) {
-        setError("Failed to load posts.");
+        console.error("Failed to load posts.", err);
       }
     };
     fetchPosts();
-  }, [user._id]);
+  }, [user._id, setPosts]);
 
-  const handleLikePost = async (postId) => {
+  const handleLikePost = async (postId, post) => {
     try {
-      await axiosInstance.put(`/posts/like/${postId}`);
-      // Refresh posts or update UI
+      const response = await axiosInstance.put(`/posts/like/${postId}`);
+      const updatedPost = { ...post, likes: response.data.likes }; // Update with the new likes count
+      addPost(updatedPost); // Update local state with new likes count
     } catch (err) {
       console.error("Error liking post", err);
     }
@@ -35,7 +36,7 @@ const Posts = () => {
   const handleSavePost = async (postId) => {
     try {
       await axiosInstance.put(`/posts/save/${postId}`);
-      // Refresh posts or update UI
+      // Optionally update UI to reflect save
     } catch (err) {
       console.error("Error saving post", err);
     }
@@ -43,20 +44,19 @@ const Posts = () => {
 
   const handleComment = async (postId, comment) => {
     try {
-      await axiosInstance.post(`/comments/${postId}`, { text: comment });
-      // Refresh posts or update UI
+      const response = await axiosInstance.post(`/comments/${postId}`, { text: comment });
+      // Optionally update UI to reflect new comment (e.g., updating comments array)
     } catch (err) {
       console.error("Error adding comment", err);
     }
   };
 
-  if (error) return <div className="text-red-500">{error}</div>;
   if (!posts.length) return <div className="text-gray-400">No posts to display.</div>;
 
   return (
     <div className="space-y-4">
       {posts.map((post) => (
-        <div key={post.id} className="border border-gray-300 rounded-lg shadow-md bg-zinc-800">
+        <div key={post} className="border border-gray-300 rounded-lg shadow-md bg-zinc-800">
           {/* Post Header */}
           <div className="flex items-center p-4">
             <img
@@ -93,7 +93,7 @@ const Posts = () => {
           <div className="flex justify-between p-4 border-t border-gray-200">
             <button
               className="text-gray-500 hover:text-blue-500 flex items-center space-x-1"
-              onClick={() => handleLikePost(post.id)}
+              onClick={() => handleLikePost(post._id, post)} // Pass current post for local state update
             >
               <FcLike /> <span>{post.likes}</span>
             </button>
@@ -102,15 +102,15 @@ const Posts = () => {
             </button>
             <button
               className="text-gray-500 hover:text-blue-500"
-              onClick={() => handleSavePost(post.id)}
+              onClick={() => handleSavePost(post._id)}
             >
               <GiSaveArrow />
             </button>
             <button
               className="text-gray-500 hover:text-blue-500 flex items-center space-x-1"
-              onClick={() => handleComment(post.id, "Your comment here")}
+              onClick={() => handleComment(post._id, "Your comment here")}
             >
-              <AiOutlineMessage /> <span>{post.comments.length}</span>
+              <AiOutlineMessage /> <span>{post.comments?.length}</span>
             </button>
           </div>
         </div>

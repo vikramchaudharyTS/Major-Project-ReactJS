@@ -11,7 +11,6 @@ import SuggestedUsers from '../components/SuggestUsers';
 function Dashboard() {
   const { isAuthenticated, isLoading, isCheckingAuth, user } = useAuthStore();
   const navigate = useNavigate();
-  console.log(user);
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");

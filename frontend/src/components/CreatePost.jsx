@@ -1,11 +1,13 @@
 //@ts-nocheck
 import React, { useState } from "react";
-import axiosInstance from '../utils/axios.js'; 
+import axiosInstance from '../utils/axios.js';
+import { usePostStore } from '../store/postsStore.js';  // Import Zustand store
 
 const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState([]);
+  const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);  // Loading state for the button
+  const { addPost } = usePostStore();  // Destructure addPost from Zustand store
 
   // Handle file input change
   const handleImageChange = (e) => {
@@ -37,6 +39,10 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
         },
       });
       console.log("Post created:", response.data);
+
+      // Dynamically add the new post to Zustand global state
+      addPost(response.data); // Add the new post to the global posts state
+
       // Reset form after submission and close the modal
       setDescription('');
       setImage(null);
