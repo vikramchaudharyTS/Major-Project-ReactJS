@@ -1,9 +1,11 @@
+//@ts-nocheck
 import React, { useState } from "react";
 import axiosInstance from '../utils/axios.js'; 
 
 const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);  // Loading state for the button
 
   // Handle file input change
   const handleImageChange = (e) => {
@@ -28,6 +30,7 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
     formData.append("isPublic", true); // Set this according to your requirements
 
     try {
+      setIsLoading(true);  // Set loading to true when submitting
       const response = await axiosInstance.post("/posts/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -41,6 +44,8 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
     } catch (error) {
       console.error("Error creating post:", error);
       alert("Failed to create post. Please try again.");
+    } finally {
+      setIsLoading(false);  // Set loading to false after completion
     }
   };
 
@@ -89,8 +94,16 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
             <button onClick={() => setIsCreatePostActive(!isCreatePostActive)} type="button" className="bg-zinc-700 text-white px-4 py-2 rounded-full hover:bg-zinc-600">
               Cancel
             </button>
-            <button type="submit" className="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-blue-700">
-              Post
+            <button 
+              type="submit" 
+              className="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-blue-700 disabled:opacity-50"
+              disabled={isLoading}  // Disable button while loading
+            >
+              {isLoading ? (
+                <div className="animate-spin border-t-2 border-b-2 border-white h-5 w-5 rounded-full"></div>  // Spinner
+              ) : (
+                "Post"
+              )}
             </button>
           </div>
         </form>
