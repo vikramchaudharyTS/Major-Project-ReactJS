@@ -63,6 +63,7 @@ export const deletePost = async (req, res) => {
     }
 };
 
+// fetch posts created by logged-in user only
 export const getPosts = async (req, res) => {
     try {
         const userId = req.userId; // Extract user ID from request
@@ -87,7 +88,7 @@ export const getPosts = async (req, res) => {
     }
 };
 
-
+// fetch posts created by logged-in user and users they follow
 export const getPostById = async (req, res) => {
     try {
         // Assuming the user's ID is available in req.user from the verifyToken middleware
@@ -131,6 +132,45 @@ export const getPostById = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+// Get posts from all users except the ones the logged-in user follows and their own posts
+export const getPostsFromNonFollowedUsers = async (req, res) => {
+    try {
+        const userId = req.userId; // Extract logged-in user's ID from the request
+        // Fetch the logged-in user's data to get their list of followings
+        const user = await userModel.findById(userId).populate('following', '_id');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Extract the list of followed user IDs
+        const followedUserIds = user.following.map(followedUser => followedUser._id.toString());
+        // Add the logged-in user's ID to exclude their own posts
+        followedUserIds.push(userId);
+
+        // Fetch posts excluding the logged-in user and their followings
+        const remainingPosts = await postModel
+            .find({
+                userId: { $nin: followedUserIds }, // Exclude posts by followed users and self
+            })
+            .populate("userId", "username name profileImg") // Populate user details
+            .select("userId description images createdAt location tags") // Select relevant fields
+            .sort({ createdAt: -1 }); // Sort by newest posts
+
+        if (remainingPosts.length === 0) {
+            return res.status(404).json({ message: "No posts found from non-followed users" });
+        }
+
+        res.status(200).json(remainingPosts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
 
 
 export const likePost = async (req, res) => {
