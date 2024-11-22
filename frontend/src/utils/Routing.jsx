@@ -8,7 +8,7 @@ import ForgotPasswordPage from '../Pages/ForgotPasswordPage';
 import ResetPasswordPage from '../Pages/ResetPasswordPage';
 import { useAuthStore } from '../store/authStore';
 import { useEffect } from 'react';
-import LoadingSpinner from '../components/LoadingSpinner';
+// import LoadingSpinner from '../components/LoadingSpinner';
 import LandingPage from '../Pages/LandingPage';
 import Settings from '../Pages/Settings';
 import Messages from '../Pages/Messages';
@@ -48,7 +48,7 @@ function Routing() {
         }
     }, [checkAuth, location.pathname]);
 
-    if (isCheckingAuth) return <LoadingSpinner />; // Wait until authentication check is complete
+    // if (isCheckingAuth) return <LoadingSpinner />; // Wait until authentication check is complete
 
     return (
         <Routes>

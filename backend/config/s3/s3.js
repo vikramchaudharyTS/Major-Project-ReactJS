@@ -3,18 +3,18 @@ import { v4 as uuidv4 } from 'uuid';
 import multer from 'multer';
 
 // Configure multer storage
-const storage = multer.memoryStorage(); // Stores file in memory (can also use diskStorage if needed)
+const storage = multer.memoryStorage(); 
 export const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // Example: Limit file size to 10 MB
-    // fileFilter: (req, file, cb) => {
-    //     const allowedMimeTypes = ["image/jpeg", "image/png"];
-    //     if (!allowedMimeTypes.includes(file.mimetype)) {
-    //         return cb(new Error("Only JPEG, and PNG images are allowed"), false);
-    //     }
-    //     cb(null, true);
-    // },
-}).array("images", 3); // Ensure the field name matches ("img")
+    fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ["image/jpeg", "image/png"];
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+            return cb(new Error("Only JPEG, and PNG images are allowed"), false);
+        }
+        cb(null, true);
+    },
+}).array("images", 3); 
 
 // Create S3 client for SDK v3
 const s3 = new S3Client({

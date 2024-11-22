@@ -23,6 +23,33 @@ const Posts = () => {
     fetchPosts();
   }, [user._id]);
 
+  const handleLikePost = async (postId) => {
+    try {
+      await axiosInstance.put(`/posts/like/${postId}`);
+      // Refresh posts or update UI
+    } catch (err) {
+      console.error("Error liking post", err);
+    }
+  };
+
+  const handleSavePost = async (postId) => {
+    try {
+      await axiosInstance.put(`/posts/save/${postId}`);
+      // Refresh posts or update UI
+    } catch (err) {
+      console.error("Error saving post", err);
+    }
+  };
+
+  const handleComment = async (postId, comment) => {
+    try {
+      await axiosInstance.post(`/comments/${postId}`, { text: comment });
+      // Refresh posts or update UI
+    } catch (err) {
+      console.error("Error adding comment", err);
+    }
+  };
+
   if (error) return <div className="text-red-500">{error}</div>;
   if (!posts.length) return <div className="text-gray-400">No posts to display.</div>;
 
@@ -51,7 +78,7 @@ const Posts = () => {
           </div>
 
           {/* Post Images */}
-          <div className="p-2 w-full h-96 space-y-2">
+          <div className="p-2 w-full space-y-2">
             {post.images.map((image, index) => (
               <img
                 key={index}
@@ -62,19 +89,27 @@ const Posts = () => {
             ))}
           </div>
 
-
           {/* Post Footer */}
           <div className="flex justify-between p-4 border-t border-gray-200">
-            <button className="text-gray-500 hover:text-blue-500 flex items-center space-x-1">
+            <button
+              className="text-gray-500 hover:text-blue-500 flex items-center space-x-1"
+              onClick={() => handleLikePost(post.id)}
+            >
               <FcLike /> <span>{post.likes}</span>
             </button>
             <button className="text-gray-500 hover:text-blue-500">
               <IoShareSocialOutline />
             </button>
-            <button className="text-gray-500 hover:text-blue-500">
+            <button
+              className="text-gray-500 hover:text-blue-500"
+              onClick={() => handleSavePost(post.id)}
+            >
               <GiSaveArrow />
             </button>
-            <button className="text-gray-500 hover:text-blue-500 flex items-center space-x-1">
+            <button
+              className="text-gray-500 hover:text-blue-500 flex items-center space-x-1"
+              onClick={() => handleComment(post.id, "Your comment here")}
+            >
               <AiOutlineMessage /> <span>{post.comments.length}</span>
             </button>
           </div>

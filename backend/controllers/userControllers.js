@@ -217,3 +217,22 @@ export const checkAuth = async (req, res) => {
         res.status(500).json({ success: false, message: "EF-B/CheckAuth " + error.message });
     }
 }
+
+export const allUsers = async (req, res) => {
+    try {
+        const users = await userModel.find({}); // Fetch all users
+
+        if (users.length > 0) {
+            const formattedUsers = users.map(user => ({
+                userId: user._id,
+                username: user.username
+            }));
+
+            return res.status(200).json(formattedUsers); // Return formatted users
+        } else {
+            return res.status(404).json({ message: "No users found" });
+        }
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};

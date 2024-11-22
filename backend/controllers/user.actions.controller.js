@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import notificationModel from "../models/notification.model.js";
-import {userModel} from "../models/userModel.js";
+import { userModel } from "../models/userModel.js";
+import { formatNotificationMessage } from '../utils/formatNotificationMessages.js';
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 
@@ -23,7 +24,7 @@ export const getUserProfile = async (req, res) => {
 
 export const getAnotherUserProfile = async (req, res) => {
     const { user: userId } = req.params;
-    
+
     try {
         const user = await userModel.findById(userId).select("-password");
         if (!user) {
@@ -73,10 +74,13 @@ export const followUnfollowUser = async (req, res) => {
             await userModel.findByIdAndUpdate(userId, { $push: { followers: Id } });
             await userModel.findByIdAndUpdate(Id, { $push: { following: userId } });
 
+            // Create a notification
             const newNotification = new notificationModel({
-                type: "follow",
-                from: Id,
-                to: userToModify._id
+                type: "follow",  // The type of notification
+                from: Id,  // The user who is following
+                to: userToModify._id,  // The user who is being followed
+                targetId: userToModify._id,  // The target user of the notification
+                modelType: "User"  // Assuming the notification is for a user model, adjust if needed
             });
 
             await newNotification.save();
@@ -88,6 +92,7 @@ export const followUnfollowUser = async (req, res) => {
         res.status(500).json({ error: "Error following/unfollowing user: " + error.message });
     }
 };
+
 
 // Get Suggested Users
 export const getSuggestedUsers = async (req, res) => {
@@ -162,3 +167,37 @@ export const updateUserProfile = async (req, res) => {
         res.status(500).json({ error: "error updating user profile!" });
     }
 };
+
+
+export const getNotifications = async (req, res) => {
+    const userId = req.userId; // Assuming userId is retrieved from middleware
+    const { page = 1 } = req.query; // Default page is 1
+
+    try {
+        const limit = 15;
+        const skip = (page - 1) * limit;
+
+        // Fetch notifications for the logged-in user, excluding notifications from the user themselves
+        const notifications = await notificationModel
+            .find({ to: userId, from: { $ne: userId } }) // Exclude self-generated notifications
+            .populate("from", "username profileImg") // Populate sender info
+            .populate("targetId", "description images commentText") // Populate target details (Post or Comment)
+            .sort({ createdAt: -1 }) // Sort by newest first
+            .skip(skip)
+            .limit(limit);
+
+        // Format notifications with dynamic messages
+        const formattedNotifications = notifications.map((notification) => ({
+            id: notification._id,
+            from: notification.from, // Includes populated "username" and "profileImg"
+            message: formatNotificationMessage(notification), // Generate message dynamically
+            read: notification.read,
+            createdAt: notification.createdAt,
+        }));
+
+        res.status(200).json(formattedNotifications);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+

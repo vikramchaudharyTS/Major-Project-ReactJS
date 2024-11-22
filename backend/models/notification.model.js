@@ -14,14 +14,19 @@ const notificationSchema = new mongoose.Schema({
     type: {
         type: String,
         required: true,
-        enum: ['follow', 'like', 'like_comment', 'comment', 'reply_comment'] // New actions added
+        enum: ['follow', 'like', 'like_comment', 'comment', 'reply_comment'] // Action types
     },
-    targetId: { // New field to represent the post or comment related to the notification
+    modelType: { // New field for the model type used in refPath
+        type: String,
+        required: true,
+        enum: ['Post', 'Comment', 'User'] // Valid model names
+    },
+    targetId: { // Dynamically resolves to 'Post' or 'Comment'
         type: mongoose.Schema.Types.ObjectId,
-        refPath: 'type', // This will dynamically point to either 'Post' or 'Comment'
+        refPath: 'modelType', // Use 'modelType' for dynamic referencing
         required: true
     },
-    content: { // Optional: A short description or excerpt related to the notification (e.g., comment text)
+    content: {
         type: String,
         default: ''
     },
@@ -31,6 +36,7 @@ const notificationSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-const notificationModel = mongoose.model("notifications", notificationSchema);
+
+const notificationModel = mongoose.model("notification", notificationSchema);
 
 export default notificationModel;

@@ -1,23 +1,32 @@
-import React from 'react'
+import React from "react";
 
-function NotificationCall({notificationCallData}) {
+function NotificationCall({ notificationCallData }) {
   return (
-        <>
-            {notificationCallData.map((data, index)=>(
-                <div key={index} className='flex w-full items-center flex-nowrap p-2 hover:bg-zinc-800/80 hover:rounded-lg cursor-pointer'>
-                    <div className='w-[20%]'>
-                        <img className='w-10 h-10 object-cover rounded-full object-top' src={`${data.image}`} alt="User avatar" />
-                    </div>
-                    <h1 className='text-md font-semibold'>
-                        {data.username} 
-                        <span className='font-normal text-sm text-gray-300'> 
-                            &nbsp;{data.notificationAbout}
-                        </span>
-                    </h1>
-             </div>
-            ))}
-        </>
-  )
+    <>
+      {notificationCallData.map((notification) => (
+        <div
+          key={notification.id} // Use 'id' from backend response for unique keys
+          className="flex w-full items-center flex-nowrap p-2 hover:bg-zinc-800/80 hover:rounded-lg cursor-pointer"
+        >
+          {/* Profile image */}
+          <div className="w-[20%]">
+            <img
+              className="w-10 h-10 object-cover rounded-full object-top"
+              src={notification.from.profileImg || "/default-avatar.png"} // Fallback to default avatar
+              alt={`${notification.from.username}'s avatar`}
+            />
+          </div>
+          {/* Notification message */}
+          <div className="w-[80%]">
+            <h1 className="text-sm">
+              {notification.message} {/* Render formatted message from backend */}
+            </h1>
+            
+          </div>
+        </div>
+      ))}
+    </>
+  );
 }
 
-export default NotificationCall
+export default NotificationCall;

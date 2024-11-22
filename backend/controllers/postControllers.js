@@ -1,12 +1,13 @@
-import { uploadImageToS3 } from "../config/s3/s3.js";
+import { deleteImageFromS3, uploadImageToS3 } from "../config/s3/s3.js";
 import { postModel, commentModel } from "../models/postModel.js";
 import { userModel } from "../models/userModel.js";  // Import userModel
+import notificationModel from "../models/notification.model.js";
 
 /// --- Post Controllers ---
 export const createPost = async (req, res) => {
     const userId = req.userId
     try {
-        const {description, tags, isPublic, location } = req.body;
+        const { description, tags, isPublic, location } = req.body;
         const imageUrls = [];
         console.log("Received files:", req.files);  // Check file upload
         console.log("Received description:", req.body.description); // Check form data
@@ -41,7 +42,7 @@ export const createPost = async (req, res) => {
 export const deletePost = async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId } = req.body;
+        const userId = req.userId;
 
         const deletedPost = await postModel.findByIdAndDelete(id);
         if (!deletedPost) return res.status(404).json({ message: "Post not found" });
@@ -64,14 +65,21 @@ export const deletePost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query; // Default values for pagination
+        const userId = req.userId; // Extract user ID from request
+        // const { page = 1, limit = 10 } = req.query; // Default values for pagination
+
+        // Fetch posts created by the logged-in user
         const posts = await postModel
-            .find()
-            .populate("userId", "username name profileImg") // Populate user info from userModel
+            .find({ userId }) // Filter posts by the logged-in user's ID
+            .populate("userId", "username name profileImg") // Populate user info
             .select("userId description images createdAt location tags") // Only retrieve required post fields
             .sort({ createdAt: -1 }) // Sort by newest posts first
-            .skip((page - 1) * limit) // Pagination logic
-            .limit(parseInt(limit)); // Limit number of posts per page
+        // .skip((page - 1) * limit) // Pagination logic
+        // .limit(parseInt(limit)); // Limit number of posts per page
+
+        if (!posts.length) {
+            return res.status(404).json({ message: "No posts found for this user" });
+        }
 
         res.status(200).json(posts);
     } catch (error) {
@@ -79,18 +87,32 @@ export const getPosts = async (req, res) => {
     }
 };
 
+
 export const getPostById = async (req, res) => {
     try {
         // Assuming the user's ID is available in req.user from the verifyToken middleware
         const userId = req.userId;
 
-        // Fetch all posts by the logged-in user
+        // Fetch the logged-in user's data to get the list of people they follow
+        const user = await userModel.findById(userId).populate('following', '_id');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Extract the list of followed users' IDs
+        const followedUserIds = user.following.map(followedUser => followedUser._id);
+
+        // Include the logged-in user's ID in the query to fetch their posts as well
+        followedUserIds.push(userId); // Add the logged-in user to the list of followed users
+
+        // Fetch posts of the logged-in user and the users they follow
         const posts = await postModel
-            .find({ userId })
+            .find({ userId: { $in: followedUserIds } })
             .populate("userId", "username name profileImg");
 
         if (!posts.length) {
-            return res.status(404).json({ message: "No posts found for this user" });
+            return res.status(404).json({ message: "No posts found for this user and their follows" });
         }
 
         // Optionally, format the data if needed
@@ -111,20 +133,31 @@ export const getPostById = async (req, res) => {
 };
 
 
-
 export const likePost = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { userId } = req.body;
+        const { id } = req.params; // Post ID
+        const userId = req.userId; // ID of the logged-in user
 
         const post = await postModel.findById(id);
         if (!post) return res.status(404).json({ message: "Post not found" });
 
         const isLiked = post.likes.includes(userId);
         if (isLiked) {
+            // Unlike the post
             post.likes = post.likes.filter((id) => id.toString() !== userId);
         } else {
+            // Like the post
             post.likes.push(userId);
+
+            // Add notification
+            const newNotification = new notificationModel({
+                type: "like",
+                from: userId,
+                to: post.userId,
+                modelType: "Post", // Specify the model type
+                targetId: post._id,
+            });
+            await newNotification.save();
         }
 
         await post.save();
@@ -134,10 +167,11 @@ export const likePost = async (req, res) => {
     }
 };
 
+
 export const savePost = async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId } = req.body;
+        const userId = req.userId;
 
         const post = await postModel.findById(id);
         if (!post) return res.status(404).json({ message: "Post not found" });
@@ -160,7 +194,8 @@ export const savePost = async (req, res) => {
 export const addComment = async (req, res) => {
     try {
         const { postId } = req.params;
-        const { userId, commentText } = req.body;
+        const { commentText } = req.body;
+        const userId = req.userId
 
         const newComment = await commentModel.create({ postId, userId, commentText });
         const post = await postModel.findById(postId);
@@ -169,6 +204,17 @@ export const addComment = async (req, res) => {
 
         post.comments.push(newComment._id);
         await post.save();
+
+        // Add notification
+        const newNotification = new notificationModel({
+            type: "comment",
+            from: userId,
+            modelType: "Comment",
+            to: post.userId,
+            targetId: newComment._id,
+            content: commentText,
+        });
+        await newNotification.save();
 
         res.status(201).json(newComment);
     } catch (error) {
@@ -189,7 +235,7 @@ export const getCommentsByPost = async (req, res) => {
 export const likeComment = async (req, res) => {
     try {
         const { commentId } = req.params;
-        const { userId } = req.body;
+        const userId = req.userId
 
         const comment = await commentModel.findById(commentId);
         if (!comment) return res.status(404).json({ message: "Comment not found" });
@@ -199,6 +245,15 @@ export const likeComment = async (req, res) => {
             comment.likes = comment.likes.filter((id) => id.toString() !== userId);
         } else {
             comment.likes.push(userId);
+            // Add notification
+            const newNotification = new notificationModel({
+                type: "like_comment",
+                from: userId,
+                modelType:"Comment",
+                to: comment.userId._id,
+                targetId: comment._id,
+            });
+            await newNotification.save();
         }
 
         await comment.save();
@@ -211,7 +266,8 @@ export const likeComment = async (req, res) => {
 export const replyToComment = async (req, res) => {
     try {
         const { commentId } = req.params;
-        const { userId, replyText } = req.body;
+        const { replyText } = req.body;
+        const userId = req.userId
 
         const comment = await commentModel.findById(commentId);
         if (!comment) return res.status(404).json({ message: "Comment not found" });
@@ -224,6 +280,16 @@ export const replyToComment = async (req, res) => {
 
         comment.replies.push(newReply);
         await comment.save();
+
+        const newNotification = new notificationModel({
+            type: "reply_comment",
+            from: userId,
+            modelType:"Comment",
+            to: comment.userId._id,
+            targetId: comment._id,
+            content: replyText,
+        });
+        await newNotification.save();
 
         res.status(201).json(comment);
     } catch (error) {
