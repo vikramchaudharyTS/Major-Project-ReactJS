@@ -20,11 +20,11 @@ function Notifications() {
     };
 
     fetchNotifications();
-  }, []);
+  }, [notifications]);
 
   return (
     <div
-      className={`mt-24 w-full flex flex-col px-4 flex-wrap items-center justify-start rounded-lg py-1 gap-2 ${
+      className={`mt-24 w-full flex flex-col px-4 items-center justify-start rounded-lg py-1 gap-2 ${
         isActiveNotification ? "h-[40%]" : null
       }`}
     >
@@ -38,7 +38,14 @@ function Notifications() {
       {loading ? (
         <p>Loading notifications...</p> // Display a loading message while fetching
       ) : isActiveNotification && notifications.length > 0 ? (
-        <NotificationCall notificationCallData={notifications} />
+        <div
+          className="w-full h-full overflow-y-auto bg-zinc-900 rounded-lg p-4"
+          style={{
+            maxHeight: "300px", // Limit height for scrolling
+          }}
+        >
+          <NotificationCall notificationCallData={notifications} />
+        </div>
       ) : isActiveNotification && notifications.length === 0 ? (
         <p>No notifications found.</p> // Display when there are no notifications
       ) : null}

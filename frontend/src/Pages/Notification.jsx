@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../utils/axios.js';
+import axiosInstance from '../utils/axios.js';
 
 function Notification() {
   const [notifications, setNotifications] = useState([]);
@@ -9,7 +9,7 @@ function Notification() {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get('/users/notifications');
+        const response = await axiosInstance.get('/users/notifications');
         setNotifications(response.data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch notifications');
