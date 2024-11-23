@@ -8,7 +8,7 @@ function Settings() {
   };
 
   return (
-    <div className="w-full pt-16">
+    <div className="w-[86vw] pt-16">
       <div className="container mx-auto p-6 max-w-4xl">
         <h1 className="text-2xl font-bold mb-6">Settings</h1>
 

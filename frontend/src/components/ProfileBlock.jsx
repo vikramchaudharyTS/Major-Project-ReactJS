@@ -39,7 +39,7 @@ function ProfileBlock() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className='relative flex flex-col gap-4 mx-auto py-5 w-[90%]'>
+    <div className='relative flex flex-col gap-4 mx-auto py-5 w-[90%] '>
       <div className=' w-full h-52 rounded-lg overflow-hidden'>
         <img className='w-full h-full object-cover object-center' src={user?.coverPhoto} alt="Cover" />
       </div>

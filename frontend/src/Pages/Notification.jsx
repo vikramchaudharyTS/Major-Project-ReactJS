@@ -30,7 +30,7 @@ function Notification() {
   }
 
   return (
-    <div className="w-full h-screen px-10 rounded-lg flex justify-between">
+    <div className="w-[86vw] h-screen px-10 rounded-lg flex justify-between">
       <div className="w-[38%] h-[88%] my-24 mr-10 overflow-y-auto bg-zinc-800/60 rounded-lg p-4">
         <h2 className="text-xl font-semibold text-white mb-4">Notifications</h2>
         {notifications.map((notification) => (

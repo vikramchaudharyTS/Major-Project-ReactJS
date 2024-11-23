@@ -10,7 +10,7 @@ function LandingPage() {
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.5 }}
-  className="flex flex-col h-screen backdrop-filter backdrop-blur-xl rounded-xl shadow-xl overflow-hidden"
+  className="flex flex-col h-screen w-full backdrop-filter backdrop-blur-xl rounded-xl shadow-xl overflow-hidden"
 >
   {/* Navigation */}
   <nav className="flex items-center justify-between p-4 mb-2">

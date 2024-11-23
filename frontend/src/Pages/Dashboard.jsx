@@ -22,7 +22,7 @@ function Dashboard() {
   }
 
   return (
-    <div className='flex w-full'>
+    <div className='flex w-[86vw]'>
       <div className='mx-10 w-[49%] h-screen flex flex-col items-center overflow-scroll'>
         <Feed />
       </div>

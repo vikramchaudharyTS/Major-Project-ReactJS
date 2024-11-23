@@ -9,7 +9,7 @@ function ProfilePage() {
         <div className='flex flex-col'>
 
           <div className='w-full h-screen px-10 flex justify-between'>
-            <div className='bg-zinc-800/20 w-full h-[88%] mt-24 flex-1 flex overflow-hidden rounded-lg'>
+            <div className='bg-zinc-800/20 w-[83vw] h-[88%] mt-24 flex-1 flex overflow-hidden rounded-lg'>
               {/* profile block */}
               <div className='w-[30%] h-full'>
                 <ProfileBlock />

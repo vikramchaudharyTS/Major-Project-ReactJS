@@ -29,7 +29,7 @@ const Posts = () => {
       const updatedPost = { ...post, likes: response.data.likes }; // Update with the new likes count
       addPost(updatedPost); // Update local state with new likes count
     } catch (err) {
-      console.error("Error liking post", err);
+      console.error("Error liking post", err.message);
     }
   };
 
@@ -56,7 +56,7 @@ const Posts = () => {
   return (
     <div className="space-y-4">
       {posts.map((post) => (
-        <div key={post} className="border border-gray-300 rounded-lg shadow-md bg-zinc-800">
+        <div key={post.name} className="border border-gray-300 rounded-lg shadow-md bg-zinc-800">
           {/* Post Header */}
           <div className="flex items-center p-4">
             <img

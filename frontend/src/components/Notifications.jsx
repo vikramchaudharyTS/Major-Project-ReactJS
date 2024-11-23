@@ -20,7 +20,7 @@ function Notifications() {
     };
 
     fetchNotifications();
-  }, [notifications]);
+  }, [setNotifications]);
 
   return (
     <div

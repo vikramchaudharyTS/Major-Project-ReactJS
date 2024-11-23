@@ -4,7 +4,7 @@ import MessagesBox from '../components/MessagesBox';
 
 function Messages() {
   return (
-    <div className='w-full h-screen px-10 rounded-lg flex justify-between'>
+    <div className='w-[86vw] h-screen px-10 rounded-lg flex justify-between'>
       <div className='w-[28%]'>
         <ExtremeRightBar />
       </div>

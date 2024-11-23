@@ -30,8 +30,16 @@ function AccountPosts() {
     return <div className="text-center text-lg text-red-500">{error}</div>;
   }
 
+  if (posts.length === 0) {
+    return (
+      <div className="w-full text-center text-xl text-gray-500">
+        No posts available
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-3 gap-4 p-4">
+    <div className="grid grid-cols-3 gap-4 p-4 ">
       {posts.map((post) => (
         <div
           key={post}
