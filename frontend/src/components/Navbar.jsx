@@ -14,7 +14,7 @@ function Navbar() {
   const fetchUserDetails = async () => {
     try {
       const response = await axiosInstance.get('/users/profile'); // Endpoint to fetch user details
-      setUserDetails(response.data); // Update Zustand store with user data
+      setUserDetails(response.data.user); // Update Zustand store with user data
     } catch (error) {
       console.error('Error fetching user details:', error);
     }

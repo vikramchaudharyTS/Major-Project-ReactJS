@@ -3,27 +3,33 @@ import { usePostStore } from '../store/postsStore.js'; // Import Zustand store
 import axiosInstance from '../utils/axios.js';
 
 function AccountPosts({ userId }) {
-  // Get state and actions from the Zustand store
   const { posts, loading, error, setPosts, setLoading, setError } = usePostStore();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        setLoading(true); // Set loading state to true when fetching starts
-        const endpoint = userId 
-          ? `/posts/user-profile/${userId}` 
-          : '/posts/user-profile'; // Adjust the endpoint based on whether userId is provided
+        setLoading(true);
+
+        // Fetch posts based on whether userId is provided
+        const endpoint = userId ? `/users/profile/${userId}` : '/users/profile';
         const response = await axiosInstance.get(endpoint);
-        setPosts(response.data); // Set the posts data from the response
+        
+        // Check if response contains posts, then set them
+        if (response.data && response.data.posts) {
+          setPosts(response.data.posts); // Assuming the posts are returned in `response.data.posts`
+          console.log(response.data.posts);
+        } else {
+          setPosts([]); // If no posts are found
+        }
       } catch (err) {
-        setError(err.response?.data?.message || 'Something went wrong'); // Set error state
+        setError(err.response?.data?.message || 'Something went wrong');
       } finally {
-        setLoading(false); // Set loading state to false after fetching is complete
+        setLoading(false);
       }
     };
 
     fetchPosts();
-  }, [userId, setPosts, setLoading, setError]); // Re-run effect when userId changes
+  }, [userId, setPosts, setLoading, setError]);
 
   if (loading) {
     return <div className="text-center text-lg">Loading...</div>;
@@ -43,15 +49,15 @@ function AccountPosts({ userId }) {
 
   return (
     <div className="grid grid-cols-3 gap-4 p-4">
-      {posts.map((post, index) => (
+      {posts.map((post) => (
         <div
-          key={index}
+          key={post._id}
           className="hover:scale-105 transition transform rounded overflow-hidden shadow-lg"
         >
           <img
             className="w-full h-64 object-cover object-center"
-            src={post.images[0]} // Assuming posts have at least one image
-            alt={post.description}
+            src={post.images[0]} // Assuming each post has an `images` array
+            alt={post.description || 'Post image'}
           />
           <div className="p-2">
             <h3 className="text-lg font-semibold">{post.description || 'No description'}</h3>

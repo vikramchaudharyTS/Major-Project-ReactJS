@@ -2,6 +2,7 @@
 import { create } from 'zustand'
 import axiosInstance from '../utils/axios';
 import { API_USER_ACTIONS_URL, API_AUTH_URL } from '../utils/urls';
+import { usePostStore } from './postsStore.js';  // Import the post store
 
 
 export const useAuthStore = create((set) => ({
@@ -126,7 +127,7 @@ export const useAuthStore = create((set) => ({
             });
             set({ message: response.data.message, isLoading: false });
         } catch (error) {
-            console.error("EF-F/authStore resetPassword error:", error);  
+            console.error("EF-F/authStore resetPassword error:", error);
             set({
                 isLoading: false,
                 error: error.response.data.message || "Error resetting password",
@@ -170,29 +171,71 @@ export const useAuthStore = create((set) => ({
             set({ error: "Error toggling follow status", isTogglingFollowStatus: false });
         }
     },
+    // fetchUserData: async () => {
+    //     if (!useAuthStore.getState().user) {
+    //         set({ isLoading: true, error: null });
+    //         try {
+    //             const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile`);
+    //             set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+    //         } catch (error) {
+    //             console.error("Error fetchingUserData:", error);
+    //             set({ error: 'Error fetching user data', isLoading: false });
+    //         }
+    //     }
+    // },
+    // fetchAnotherUserData: async (userId) => {
+    //     if (!userId) return;  // Check if userId exists
+    //     set({ isLoading: true, error: null });
+    //     try {
+    //         const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile/${userId}`);  // Use the userId in the request
+    //         set({ anotherUser: response.data, isLoading: false });
+    //     } catch (error) {
+    //         console.error("Error fetchingAnotherUserData:", error);
+    //         set({ error: 'Error fetching user data', isLoading: false });
+    //     }
+    // },
+
     fetchUserData: async () => {
         if (!useAuthStore.getState().user) {
             set({ isLoading: true, error: null });
             try {
                 const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile`);
-                set({ user: response.data.user, isAuthenticated: true, isLoading: false });
+                // Extract user and posts from the response
+                const { user, posts } = response.data;
+                set({
+                    user: user,
+                    isAuthenticated: true,
+                    isLoading: false
+                });
+                // Store the posts in the post store
+                usePostStore.getState().setPosts(posts); // Assuming `setPosts` updates the posts in the store
             } catch (error) {
                 console.error("Error fetchingUserData:", error);
                 set({ error: 'Error fetching user data', isLoading: false });
             }
         }
     },
+
     fetchAnotherUserData: async (userId) => {
         if (!userId) return;  // Check if userId exists
         set({ isLoading: true, error: null });
         try {
             const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile/${userId}`);  // Use the userId in the request
-            set({ anotherUser: response.data, isLoading: false });
+            // Extract user and posts from the response
+            const { user, posts } = response.data;
+            set({
+                anotherUser: user,
+                isLoading: false
+            });
+            // Store the posts of the other user in the post store
+            usePostStore.getState().setPosts(posts); // Update the post store with the fetched posts
         } catch (error) {
             console.error("Error fetchingAnotherUserData:", error);
             set({ error: 'Error fetching user data', isLoading: false });
         }
     },
+
+
 }))
 
 

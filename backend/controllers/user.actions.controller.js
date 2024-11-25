@@ -7,34 +7,45 @@ import mongoose from 'mongoose';
 
 // Get User Profile
 export const getUserProfile = async (req, res) => {
-    const userId = req.userId;
+    const userId = req.userId; // Get user ID from the authenticated request
 
     try {
-        const user = await userModel.findById(userId).select("-password");
+        const user = await userModel.findById(userId)
+            .select("-password") // Exclude password field
+            .populate('myPosts') // Populate the myPosts field with actual post data
+            .exec(); // Execute the query
+
         if (!user) {
             return res.status(404).json({ error: "No user found!" });
         }
-        res.status(200).json(user);
 
+        // Return user profile with populated posts
+        res.status(200).json({ user, posts: user.myPosts });
     } catch (error) {
         console.log("EF-B/getUserProfile controller" + error.message);
-        res.status(500).json({ error: "error getting user details!" });
+        res.status(500).json({ error: "Error getting user details!" });
     }
 };
 
+// Get another user's profile by their user ID
 export const getAnotherUserProfile = async (req, res) => {
-    const { user: userId } = req.params;
+    const { user: userId } = req.params; // Extract the user ID from the route parameters
 
     try {
-        const user = await userModel.findById(userId).select("-password");
+        const user = await userModel.findById(userId)
+            .select("-password") // Exclude password field
+            .populate('myPosts') // Populate the myPosts field with actual post data
+            .exec(); // Execute the query
+
         if (!user) {
             return res.status(404).json({ error: "No user found!" });
         }
-        res.status(200).json(user);
 
+        // Return another user's profile with populated posts
+        res.status(200).json({ user, posts: user.myPosts });
     } catch (error) {
-        console.log("EF-B/getUserProfile controller" + error.message);
-        res.status(500).json({ error: "error getting user details!" });
+        console.log("EF-B/getAnotherUserProfile controller" + error.message);
+        res.status(500).json({ error: "Error getting user details!" });
     }
 };
 

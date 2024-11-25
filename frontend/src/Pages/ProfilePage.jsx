@@ -32,7 +32,7 @@ function ProfilePage() {
             </div>
             {/* Posts block */}
             <div className="overflow-y-scroll w-[70%] flex flex-wrap gap-14 p-16 items-start justify-start min-h-[calc(100vh-96px)]">
-              <AccountPosts user={displayedUser} />
+              <AccountPosts userId={userId} />
             </div>
           </div>
         </div>
