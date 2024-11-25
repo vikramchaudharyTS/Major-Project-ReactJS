@@ -40,7 +40,8 @@ const userSchema = new mongoose.Schema({
         ref: 'Post'
     }],
     profileImg:{
-        type: String // Store URL or path to image
+        type: String, 
+        default: "https://vault-major-project.s3.ap-south-1.amazonaws.com/pfp.webp" 
     },
     coverImg:{
         type: String // Store URL or path to image

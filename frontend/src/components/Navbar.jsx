@@ -8,10 +8,9 @@ import axiosInstance from '../utils/axios'; // Assuming you have the axios insta
 
 function Navbar() {
   const [isCreatePostActive, setIsCreatePostActive] = useState(false);
-  
-  const { isAuthenticated } = useAuthStore(); // Assuming you have a setUserDetails function in your store
-  const [user, setUserDetails] = useState('')
-  // Fetch current user details from backend
+  const {user, isAuthenticated } = useAuthStore();
+  const [users, setUserDetails] = useState(user)
+ 
   const fetchUserDetails = async () => {
     try {
       const response = await axiosInstance.get('/users/profile'); // Endpoint to fetch user details
@@ -42,14 +41,14 @@ function Navbar() {
           Create post <IoCreateOutline className='text-xl' />
         </div>
         <div className='flex gap-5 items-center text-[18px] px-3 cursor-pointer'>
-          {isAuthenticated && user ? (
+          {isAuthenticated && users ? (
             <>
               <img
                 className='w-10 h-10 object-cover rounded-full'
-                src={user.img || '/default-profile.png'} // Use a default profile image if `user.img` is undefined
+                src={users.profileImg} 
                 alt="profile img"
               />
-              <h1>{user.username || "User"}</h1> {/* Always display the username */}
+              <h1>{users.username || "User"}</h1> 
             </>
           ) : (
             <h1>Loading...</h1>

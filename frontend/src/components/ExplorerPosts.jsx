@@ -74,13 +74,13 @@ const ExplorerPosts = () => {
   };
 
   return (
-    <div className='w-full flex flex-col flex-wrap items-center justify-center gap-7'>
+    <div className='w-full flex flex-col flex-wrap items-start justify-center gap-7'>
       <div className='overflow-y-auto p-4'>
-        <div className='flex gap-4'>
+        <div className='flex  gap-4'>
           {layout.map((column, columnIndex) => (
-            <div key={columnIndex} className='flex flex-col gap-4'>
+            <div key={columnIndex} className='flex flex-col  gap-4'>
               {column.map((item, index) => (
-                <div key={index} className='bg-zinc-800 text-left rounded-lg overflow-hidden flex flex-col'>
+                <div key={index} className='bg-zinc-800 max-w-[40vw] text-left hover:scale-[102%] transition-transform rounded-lg overflow-hidden flex flex-col'>
                   <h1 className='px-3 py-2 font-semibold'>{item.name}</h1>
                   <div className='flex justify-center items-center px-2'>
                     <img className='w-full h-auto object-cover' src={item.img} alt={item.name} />

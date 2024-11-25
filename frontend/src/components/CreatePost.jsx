@@ -1,19 +1,23 @@
 //@ts-nocheck
 import React, { useState } from "react";
-import axiosInstance from '../utils/axios.js';
-import { usePostStore } from '../store/postsStore.js';  // Import Zustand store
+import axiosInstance from "../utils/axios.js";
+import { usePostStore } from "../store/postsStore.js";
+import { useAuthStore } from "../store/authStore.js";
 
 const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);  // Loading state for the button
-  const { addPost } = usePostStore();  // Destructure addPost from Zustand store
+  const [previewImage, setPreviewImage] = useState(null); // For image preview
+  const [isLoading, setIsLoading] = useState(false);
+  const { addPost } = usePostStore();
+  const { user } = useAuthStore();
 
   // Handle file input change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
+      setPreviewImage(URL.createObjectURL(file)); // Generate a preview URL for the selected file
     }
   };
 
@@ -28,11 +32,11 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
 
     const formData = new FormData();
     formData.append("description", description);
-    formData.append("images", image); // Correct field name here
-    formData.append("isPublic", true); // Set this according to your requirements
+    formData.append("images", image);
+    formData.append("isPublic", true);
 
     try {
-      setIsLoading(true);  // Set loading to true when submitting
+      setIsLoading(true);
       const response = await axiosInstance.post("/posts/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -40,18 +44,17 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
       });
       console.log("Post created:", response.data);
 
-      // Dynamically add the new post to Zustand global state
-      addPost(response.data); // Add the new post to the global posts state
+      addPost(response.data);
 
-      // Reset form after submission and close the modal
       setDescription('');
       setImage(null);
+      setPreviewImage(null); // Reset preview
       setIsCreatePostActive(false);
     } catch (error) {
       console.error("Error creating post:", error);
       alert("Failed to create post. Please try again.");
     } finally {
-      setIsLoading(false);  // Set loading to false after completion
+      setIsLoading(false);
     }
   };
 
@@ -61,15 +64,20 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
         {/* Navbar Section */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <img src="https://via.placeholder.com/50" alt="" className="rounded-full w-10 h-10" />
+            <img src={user.profileImg} alt="" className="rounded-full w-10 h-10" />
             <div>
-              <h3 className="text-md font-semibold">Name</h3>
+              <h3 className="text-md font-semibold">{user.username}</h3>
               <span className="text-sm text-zinc-400" id="postDate">
                 {new Date().toLocaleDateString()}
               </span>
             </div>
           </div>
-          <button onClick={() => setIsCreatePostActive(!isCreatePostActive)} className="text-gray-500 hover:text-gray-700 text-lg">&times;</button>
+          <button
+            onClick={() => setIsCreatePostActive(!isCreatePostActive)}
+            className="text-gray-500 hover:text-gray-700 text-lg"
+          >
+            &times;
+          </button>
         </div>
 
         {/* Form Section */}
@@ -84,29 +92,46 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </div>
+
           <div>
-            <label className="block text-sm font-medium text-white">
-              Add Image
-            </label>
+            <label className="block text-sm font-medium text-white">Add Image</label>
             <input
-              name="images" 
+              name="images"
               type="file"
               id="postImage"
               className="block w-full text-sm text-zinc-500"
               onChange={handleImageChange}
+              accept="image/*" // Restrict to image files
             />
           </div>
-          <div className="flex justify-end space-x-2">
-            <button onClick={() => setIsCreatePostActive(!isCreatePostActive)} type="button" className="bg-zinc-700 text-white px-4 py-2 rounded-full hover:bg-zinc-600">
+
+          {/* Image Preview */}
+          {previewImage && (
+            <div className="mt-4">
+              <h4 className="text-sm text-zinc-400">Image Preview:</h4>
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="w-full max-h-60 object-contain rounded-md mt-2"
+              />
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-2 mt-4">
+            <button
+              onClick={() => setIsCreatePostActive(!isCreatePostActive)}
+              type="button"
+              className="bg-zinc-700 text-white px-4 py-2 rounded-full hover:bg-zinc-600"
+            >
               Cancel
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-blue-700 disabled:opacity-50"
-              disabled={isLoading}  // Disable button while loading
+              disabled={isLoading}
             >
               {isLoading ? (
-                <div className="animate-spin border-t-2 border-b-2 border-white h-5 w-5 rounded-full"></div>  // Spinner
+                <div className="animate-spin border-t-2 border-b-2 border-white h-5 w-5 rounded-full"></div>
               ) : (
                 "Post"
               )}

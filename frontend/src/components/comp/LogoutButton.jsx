@@ -1,14 +1,16 @@
-//@ts-nocheck
 import { useAuthStore } from "../../store/authStore.js";
+import { usePostStore } from "../../store/postsStore.js"; // Import posts store
 import { motion } from "framer-motion";
-import { LogOut } from "lucide-react"; // Optional icon
+import { LogOut } from "lucide-react";
 
 const LogoutButton = () => {
-  const { logout, isLoading, user } = useAuthStore();
-  
+  const { logout, isLoading } = useAuthStore();
+  const { resetPosts } = usePostStore(); // Destructure resetPosts from posts store
+
   const handleLogout = async () => {
     try {
       await logout();
+      resetPosts(); // Clear posts when logging out
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -23,10 +25,10 @@ const LogoutButton = () => {
       disabled={isLoading}
     >
       {isLoading ? (
-        <div className="w-6 h-6 animate-spin mx-auto"> {/* Add a loading spinner here if needed */}</div>
+        <div className="w-6 h-6 animate-spin mx-auto"></div>
       ) : (
         <>
-          <LogOut className="inline-block mr-2" /> {/* Logout icon */}
+          <LogOut className="inline-block mr-2" />
           Logout
         </>
       )}

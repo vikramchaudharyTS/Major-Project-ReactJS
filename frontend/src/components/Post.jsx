@@ -55,8 +55,8 @@ const Posts = () => {
 
   return (
     <div className="space-y-4">
-      {posts.map((post) => (
-        <div key={post.name} className="border border-gray-300 rounded-lg shadow-md bg-zinc-800">
+      {posts.map((post,index) => (
+        <div key={index} className="border border-gray-300 rounded-lg shadow-md bg-zinc-800">
           {/* Post Header */}
           <div className="flex items-center p-4">
             <img

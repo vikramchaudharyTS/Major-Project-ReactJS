@@ -9,10 +9,11 @@ import authRoutes from './routes/userRoutes.js';
 import userActions from './routes/user.action.routes.js';
 import postRoutes from './routes/postRoutes.js';
 import commentRoutes from './routes/postRoutes.js';
+import { app, server } from './config/socket.js'
 
 dotenv.config();
 
-const app = express();
+// const app = express();   will be working with socket app from now on
 
 // Middleware
 app.use(cors({
@@ -33,10 +34,10 @@ app.use((err, req, res, next) => {
 app.use('/api/auth', authRoutes); // Authentication-related routes
 app.use('/api/users', userActions); // User actions routes
 app.use('/api/posts', postRoutes); // Posts-related routes
-app.use('/api/', commentRoutes); // Comments-related routes
+app.use('/api/comments', commentRoutes); // Comments-related routes
 
 // Server setup
-app.listen(3000, () => {
+server.listen(3000, () => {
     connectDB();
     console.log("Server up and running at 3000");
 });

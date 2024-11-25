@@ -7,6 +7,7 @@ export const usePostStore = create((set) => ({
   error: null,
   setPosts: (posts) => set({ posts }),
   addPost: (newPost) => set((state) => ({ posts: [newPost, ...state.posts] })),
+  resetPosts: () => set({ posts: [] }), // Reset posts state
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
 }));

@@ -64,7 +64,7 @@ export const deletePost = async (req, res) => {
 };
 
 // fetch posts created by logged-in user only
-export const getPosts = async (req, res) => {
+export const getPostsForProfileBlock = async (req, res) => {
     try {
         const userId = req.userId; // Extract user ID from request
         // const { page = 1, limit = 10 } = req.query; // Default values for pagination
@@ -79,7 +79,7 @@ export const getPosts = async (req, res) => {
         // .limit(parseInt(limit)); // Limit number of posts per page
 
         if (!posts.length) {
-            return res.status(404).json({ message: "No posts found for this user" });
+            return res.status(404).json({ message: "You have no posts yet!" });
         }
 
         res.status(200).json(posts);
@@ -89,7 +89,7 @@ export const getPosts = async (req, res) => {
 };
 
 // fetch posts created by logged-in user and users they follow
-export const getPostById = async (req, res) => {
+export const getPostForFeed = async (req, res) => {
     try {
         // Assuming the user's ID is available in req.user from the verifyToken middleware
         const userId = req.userId;

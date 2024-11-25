@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { usePostStore } from '../store/postsStore.js'; // Import Zustand store
 import axiosInstance from '../utils/axios.js';
 
-function AccountPosts() {
+function AccountPosts({ userId }) {
   // Get state and actions from the Zustand store
   const { posts, loading, error, setPosts, setLoading, setError } = usePostStore();
 
@@ -10,7 +10,10 @@ function AccountPosts() {
     const fetchPosts = async () => {
       try {
         setLoading(true); // Set loading state to true when fetching starts
-        const response = await axiosInstance.get('/posts');
+        const endpoint = userId 
+          ? `/posts/user-profile/${userId}` 
+          : '/posts/user-profile'; // Adjust the endpoint based on whether userId is provided
+        const response = await axiosInstance.get(endpoint);
         setPosts(response.data); // Set the posts data from the response
       } catch (err) {
         setError(err.response?.data?.message || 'Something went wrong'); // Set error state
@@ -20,7 +23,7 @@ function AccountPosts() {
     };
 
     fetchPosts();
-  }, [setPosts, setLoading, setError]); // Empty dependency array means it only runs on mount
+  }, [userId, setPosts, setLoading, setError]); // Re-run effect when userId changes
 
   if (loading) {
     return <div className="text-center text-lg">Loading...</div>;
@@ -39,10 +42,10 @@ function AccountPosts() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-4 p-4 ">
-      {posts.map((post) => (
+    <div className="grid grid-cols-3 gap-4 p-4">
+      {posts.map((post, index) => (
         <div
-          key={post}
+          key={index}
           className="hover:scale-105 transition transform rounded overflow-hidden shadow-lg"
         >
           <img
