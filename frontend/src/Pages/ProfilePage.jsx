@@ -5,20 +5,21 @@ import { useAuthStore } from '../store/authStore';
 import { useParams } from 'react-router-dom';
 
 function ProfilePage() {
-  const { user, fetchAnotherUserData } = useAuthStore();
+  const { user, anotherUser, fetchAnotherUserData, isLoading, error } = useAuthStore();
   const { userId } = useParams();
-
 
   // Fetch user data based on route
   useEffect(() => {
-    console.log(userId);
     if (userId) {
       fetchAnotherUserData(userId); // Fetch data for another user
     }
   }, [userId, fetchAnotherUserData]);
 
-  // Determine whether to show the logged-in user or another user's data
-  const displayedUser = userId ? user : null;
+  // Determine which user data to display
+  const displayedUser = userId ? anotherUser : user;
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="flex items-center justify-between overflow-hidden">
@@ -41,3 +42,5 @@ function ProfilePage() {
 }
 
 export default ProfilePage;
+
+

@@ -7,6 +7,7 @@ import { API_USER_ACTIONS_URL, API_AUTH_URL } from '../utils/urls';
 export const useAuthStore = create((set) => ({
 
     user: null,
+    anotherUser: null,
     isAuthenticated: false,
     error: null,
     isLoading: false,
@@ -186,7 +187,7 @@ export const useAuthStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile/${userId}`);  // Use the userId in the request
-            set({ user: response.data, isAuthenticated: true, isLoading: false });
+            set({ anotherUser: response.data, isLoading: false });
         } catch (error) {
             console.error("Error fetchingAnotherUserData:", error);
             set({ error: 'Error fetching user data', isLoading: false });
