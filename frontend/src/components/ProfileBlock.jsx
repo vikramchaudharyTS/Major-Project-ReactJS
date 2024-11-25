@@ -32,7 +32,7 @@ function ProfileBlock({user}) {
   return (
     <div className='relative flex flex-col gap-4 mx-auto py-5 w-[90%] '>
       <div className=' w-full h-52 rounded-lg overflow-hidden'>
-        <img className='w-full h-full object-cover object-center' src={user?.coverPhoto} alt="Cover" />
+        <img className='w-full h-full object-cover object-center' src={user?.coverImg} alt="Cover" />
       </div>
 
       <div className='absolute left-36 top-40 border-4 w-32 h-32 rounded-full overflow-hidden shadow-lg'>

@@ -44,7 +44,8 @@ const userSchema = new mongoose.Schema({
         default: "https://vault-major-project.s3.ap-south-1.amazonaws.com/pfp.webp" 
     },
     coverImg:{
-        type: String // Store URL or path to image
+        type: String, // Store URL or path to image
+        default: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9ScG9XyZvoewIebmmIIFV__8YKDRfHHC3eA&s'
     },
     savedPosts: {
         type: Array,
