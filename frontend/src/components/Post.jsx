@@ -21,8 +21,11 @@ const Posts = () => {
         console.error("Failed to load posts.", err);
       }
     };
-    fetchPosts();
-  }, [user._id, setPosts]);
+    if (user._id) {  
+      fetchPosts();
+    }
+  }, [user._id, setPosts, posts]);
+  
 
   const handleLikePost = async (postId, post) => {
     try {
@@ -64,16 +67,6 @@ const Posts = () => {
       } catch (err) {
         console.error("Error deleting post", err.message);
       }
-    }
-  };
-
-  const handleCreatePost = async (newPostData) => {
-    try {
-      const response = await axiosInstance.post("/posts/create", newPostData); 
-      // If successful, add the new post to the state
-      addPost(response.data);  // Assuming response contains the newly created post
-    } catch (err) {
-      console.error("Error creating post", err);
     }
   };
 

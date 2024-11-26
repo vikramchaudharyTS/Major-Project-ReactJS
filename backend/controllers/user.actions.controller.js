@@ -11,9 +11,14 @@ export const getUserProfile = async (req, res) => {
 
     try {
         const user = await userModel.findById(userId)
-            .select("-password") // Exclude password field
-            .populate('myPosts') // Populate the myPosts field with actual post data
-            .exec(); // Execute the query
+        .select("-password")
+        .populate({
+            path: 'myPosts',  // Populating the posts
+            options: {
+                sort: { createdAt: -1 }  // Sorting posts by createdAt in descending order
+            }
+        })
+        .exec();
 
         if (!user) {
             return res.status(404).json({ error: "No user found!" });
@@ -33,9 +38,14 @@ export const getAnotherUserProfile = async (req, res) => {
 
     try {
         const user = await userModel.findById(userId)
-            .select("-password") // Exclude password field
-            .populate('myPosts') // Populate the myPosts field with actual post data
-            .exec(); // Execute the query
+        .select("-password")
+        .populate({
+            path: 'myPosts',  // Populating the posts
+            options: {
+                sort: { createdAt: -1 }  // Sorting posts by createdAt in descending order
+            }
+        })
+        .exec();
 
         if (!user) {
             return res.status(404).json({ error: "No user found!" });

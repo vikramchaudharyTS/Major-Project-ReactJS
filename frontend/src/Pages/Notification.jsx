@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../utils/axios.js';
+import { useAuthStore } from '../store/authStore.js';
 
 function Notification() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const {user} = useAuthStore()
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -40,8 +43,8 @@ function Notification() {
           >
             <div className="flex items-center">
               <img
-                src={notification?.user?.profileImg || '/default-avatar.png'}
-                alt={notification?.user?.username || 'User'}
+                src={user?.profileImg}
+                alt={user?.username || 'User'}
                 className="w-12 h-12 rounded-full object-cover mr-4"
               />
               <div>
@@ -49,7 +52,7 @@ function Notification() {
                 <p className="text-gray-200 text-md">{notification?.message || 'No message available'}</p>
               </div>
             </div>
-            <div className="text-gray-500 text-sm">
+            <div className="text-gray-400 text-sm">
               {new Date(notification?.createdAt).toLocaleString()}
             </div>
           </div>
