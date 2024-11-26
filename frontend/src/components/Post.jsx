@@ -26,17 +26,17 @@ const Posts = () => {
     }
   }, [user._id, setPosts, posts]);
   
-
   const handleLikePost = async (postId, post) => {
     try {
       console.log(postId);
       const response = await axiosInstance.put(`/posts/like/${postId}`);
       const updatedPost = { ...post, likes: response.data.likes }; 
-      addPost(updatedPost); 
+      usePostStore.getState().updatePost(updatedPost); // Use updatePost to update the specific post
     } catch (err) {
       console.error("Error liking post", err.message);
     }
   };
+  
 
   const handleSavePost = async (postId) => {
     try {
