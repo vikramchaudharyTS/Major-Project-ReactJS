@@ -7,20 +7,30 @@ function Notifications() {
   const [loading, setLoading] = useState(true); // State to handle loading
   const [isActiveNotification, setIsActiveNotification] = useState(true);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await axiosInstance.get("/users/notifications");
-        setNotifications(response.data); // Set fetched notifications in state
-        setLoading(false); // Set loading to false after data is fetched
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-        setLoading(false); // Set loading to false even on error
-      }
-    };
+  // Function to fetch notifications from the server
+  const fetchNotifications = async () => {
+    try {
+      const response = await axiosInstance.get("/users/notifications");
+      setNotifications(response.data); // Set fetched notifications in state
+      setLoading(false); // Set loading to false after data is fetched
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      setLoading(false); // Set loading to false even on error
+    }
+  };
 
+  useEffect(() => {
+    // Fetch notifications initially
     fetchNotifications();
-  }, [setNotifications]);
+
+    // Set up polling to fetch notifications every 10 seconds
+    const intervalId = setInterval(fetchNotifications, 3000); // 3 seconds
+
+    // Clear interval on component unmount
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []); // Empty dependency array ensures this effect runs only once on mount
 
   return (
     <div
