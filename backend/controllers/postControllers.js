@@ -110,7 +110,7 @@ export const getPostForFeed = async (req, res) => {
         // Fetch posts of the logged-in user and the users they follow
         const posts = await postModel
             .find({ userId: { $in: followedUserIds } })
-            .populate("userId", "username name profileImg");
+            .populate("userId", "username name profileImg").sort({createdAt:-1});
 
         if (!posts.length) {
             return res.status(404).json({ message: "No posts found for this user and their follows" });

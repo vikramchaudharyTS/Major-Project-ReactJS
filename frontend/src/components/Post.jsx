@@ -4,18 +4,19 @@ import { FcLike } from "react-icons/fc";
 import { IoShareSocialOutline } from "react-icons/io5";
 import { GiSaveArrow } from "react-icons/gi";
 import { AiOutlineMessage } from "react-icons/ai";
+import { MdDelete } from "react-icons/md";
 import { useAuthStore } from "../store/authStore.js";
 import { usePostStore } from "../store/postsStore.js";
 
 const Posts = () => {
   const { user } = useAuthStore();
-  const { posts, setPosts, addPost } = usePostStore();
+  const { posts, setPosts, addPost, removePost } = usePostStore();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axiosInstance.get(`/posts/${user._id}`);
-        setPosts(response.data);  // Use Zustand to set the posts
+        setPosts(response.data);
       } catch (err) {
         console.error("Failed to load posts.", err);
       }
@@ -26,8 +27,8 @@ const Posts = () => {
   const handleLikePost = async (postId, post) => {
     try {
       const response = await axiosInstance.put(`/posts/like/${postId}`);
-      const updatedPost = { ...post, likes: response.data.likes }; // Update with the new likes count
-      addPost(updatedPost); // Update local state with new likes count
+      const updatedPost = { ...post, likes: response.data.likes }; 
+      addPost(updatedPost); 
     } catch (err) {
       console.error("Error liking post", err.message);
     }
@@ -36,7 +37,6 @@ const Posts = () => {
   const handleSavePost = async (postId) => {
     try {
       await axiosInstance.put(`/posts/save/${postId}`);
-      // Optionally update UI to reflect save
     } catch (err) {
       console.error("Error saving post", err);
     }
@@ -45,9 +45,33 @@ const Posts = () => {
   const handleComment = async (postId, comment) => {
     try {
       const response = await axiosInstance.post(`/comments/${postId}`, { text: comment });
-      // Optionally update UI to reflect new comment (e.g., updating comments array)
     } catch (err) {
       console.error("Error adding comment", err);
+    }
+  };
+
+  const handleDeletePost = async (postId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this post?");
+    if (confirmed) {
+      try {
+        // Delete the post from the backend
+        await axiosInstance.delete(`/posts/delete/${postId}`);
+        
+        // Remove the post from the state (this triggers the re-render)
+        removePost(postId);
+      } catch (err) {
+        console.error("Error deleting post", err.message);
+      }
+    }
+  };
+
+  const handleCreatePost = async (newPostData) => {
+    try {
+      const response = await axiosInstance.post("/posts/create", newPostData); 
+      // If successful, add the new post to the state
+      addPost(response.data);  // Assuming response contains the newly created post
+    } catch (err) {
+      console.error("Error creating post", err);
     }
   };
 
@@ -55,7 +79,7 @@ const Posts = () => {
 
   return (
     <div className="space-y-4">
-      {posts.map((post,index) => (
+      {posts.map((post, index) => (
         <div key={index} className="border border-gray-300 rounded-lg shadow-md bg-zinc-800">
           {/* Post Header */}
           <div className="flex items-center p-4">
@@ -70,6 +94,15 @@ const Posts = () => {
                 {new Date(post.createdAt).toLocaleString()}
               </span>
             </div>
+            {/* Only show delete button if the post belongs to the current user */}
+            {user._id === post.userId._id && (
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <MdDelete />  {/* Delete Icon */}
+              </button>
+            )}
           </div>
 
           {/* Post Description */}
@@ -93,7 +126,7 @@ const Posts = () => {
           <div className="flex justify-between p-4 border-t border-gray-200">
             <button
               className="text-gray-500 hover:text-blue-500 flex items-center space-x-1"
-              onClick={() => handleLikePost(post._id, post)} // Pass current post for local state update
+              onClick={() => handleLikePost(post.id, post)} 
             >
               <FcLike /> <span>{post.likes}</span>
             </button>
@@ -102,13 +135,13 @@ const Posts = () => {
             </button>
             <button
               className="text-gray-500 hover:text-blue-500"
-              onClick={() => handleSavePost(post._id)}
+              onClick={() => handleSavePost(post.id)}
             >
               <GiSaveArrow />
             </button>
             <button
               className="text-gray-500 hover:text-blue-500 flex items-center space-x-1"
-              onClick={() => handleComment(post._id, "Your comment here")}
+              onClick={() => handleComment(post.id, "Your comment here")}
             >
               <AiOutlineMessage /> <span>{post.comments?.length}</span>
             </button>
