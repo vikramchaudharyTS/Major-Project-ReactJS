@@ -5,6 +5,11 @@ import axiosInstance from '../utils/axios.js';
 function AccountPosts({ userId }) {
   const { posts, loading, error, setPosts, setLoading, setError } = usePostStore();
 
+
+  //   // Reset posts to an empty array whenever the component is unmounted or userId changes
+    
+  // }, [userId, setPosts]);
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -28,6 +33,11 @@ function AccountPosts({ userId }) {
     };
 
     fetchPosts();
+
+    // clean up function to set posts to an empty array again!
+    return () => {
+      setPosts([]);
+    };
   }, [userId, setPosts, setLoading, setError]);
 
   if (loading) {
