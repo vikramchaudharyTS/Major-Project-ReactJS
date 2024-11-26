@@ -1,3 +1,4 @@
+//@ts-nocheck
 import SingleButton from './comp/SingleButton';
 import { IoPersonAdd } from "react-icons/io5";
 import { TbMessage } from "react-icons/tb";

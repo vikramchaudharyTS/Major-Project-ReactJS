@@ -17,7 +17,6 @@ function AccountPosts({ userId }) {
         // Check if response contains posts, then set them
         if (response.data && response.data.posts) {
           setPosts(response.data.posts); // Assuming the posts are returned in `response.data.posts`
-          console.log(response.data.posts);
         } else {
           setPosts([]); // If no posts are found
         }
@@ -49,9 +48,9 @@ function AccountPosts({ userId }) {
 
   return (
     <div className="grid grid-cols-3 gap-4 p-4">
-      {posts.map((post) => (
+      {posts.map((post,index) => (
         <div
-          key={post._id}
+          key={index}
           className="hover:scale-105 transition transform rounded overflow-hidden shadow-lg"
         >
           <img
