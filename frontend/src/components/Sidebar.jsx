@@ -55,10 +55,6 @@ function Sidebar() {
                 </div>
                 <hr className="border-zinc-600 mb-6" />
 
-                {/* Search bar */}
-                <div className="mb-6">
-                    <SearchBar />
-                </div>
 
                 {/* Navigation options */}
                 <ThreePartButtons options={options} />

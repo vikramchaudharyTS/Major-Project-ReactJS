@@ -51,7 +51,7 @@ function ProfileBlock({user}) {
         </div>
       </div>
 
-      <h1 className=' w-full text-center p-2 font-semibold text-xl'>{user?.name}</h1>
+      <h1 className=' w-full text-center p-2 font-semibold text-xl'>{user?.name }</h1>
       <h1 className=' w-full text-center -mt-5 mb-5 text-zinc-300'>@{user?.username}</h1>
 
       {userId ? (
@@ -62,7 +62,7 @@ function ProfileBlock({user}) {
       ) : null}
 
       <div className='max-h-36 h-fit overflow-hidden'>
-        <p>{truncatedText}</p>
+        <p>{`Hii this is ${user.username}`}</p>
       </div>
 
       <div className='flex flex-col gap-3 mt-6'>

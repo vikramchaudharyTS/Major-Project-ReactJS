@@ -12,7 +12,7 @@ const Layout = () => {
             </div>
 
             {/* Main content */}
-            <div className='w-[87%] flex flex-col'>
+            <div className='w-[87vw] flex flex-col'>
                 {/* Navbar fixed to the top */}
                 <div className='fixed w-full z-10'>
                     <Navbar />
