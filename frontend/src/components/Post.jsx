@@ -26,6 +26,7 @@ const Posts = () => {
 
   const handleLikePost = async (postId, post) => {
     try {
+      console.log(postId);
       const response = await axiosInstance.put(`/posts/like/${postId}`);
       const updatedPost = { ...post, likes: response.data.likes }; 
       addPost(updatedPost); 
@@ -37,6 +38,7 @@ const Posts = () => {
   const handleSavePost = async (postId) => {
     try {
       await axiosInstance.put(`/posts/save/${postId}`);
+      console.log("post saved", postId);
     } catch (err) {
       console.error("Error saving post", err);
     }
@@ -86,10 +88,10 @@ const Posts = () => {
             <img
               src={post.userId.profileImg || "https://via.placeholder.com/50"}
               alt={post.userId.name}
-              className="w-10 h-10 rounded-full mr-3"
+              className=" cursor-pointer w-10 h-10 rounded-full mr-3"
             />
             <div className="flex-grow">
-              <span className="font-semibold">{post.userId.name}</span>
+              <span className="font-semibold cursor-pointer">{post.userId.name}</span>
               <span className="text-gray-500 text-sm ml-2">
                 {new Date(post.createdAt).toLocaleString()}
               </span>

@@ -7,7 +7,7 @@ export const usePostStore = create((set) => ({
   error: null,
   setPosts: (posts) => set({ posts }),
   // Add post function
-  addPost: (newPost) => set((state) => ({
+ addPost: (newPost) => set((state) => ({
     posts: [newPost, ...state.posts] // Add the new post to the beginning
   })),
   removePost: (postId) => set((state) => ({

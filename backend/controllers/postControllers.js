@@ -206,29 +206,70 @@ export const likePost = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-
 export const savePost = async (req, res) => {
     try {
         const { id } = req.params;
         const userId = req.userId;
 
+        // Check if userId is present
+        if (!userId) {
+            return res.status(400).json({ message: "User not authenticated" });
+        }
+
         const post = await postModel.findById(id);
         if (!post) return res.status(404).json({ message: "Post not found" });
 
+        // Ensure `savedBy` is an array in the post document
+        if (!Array.isArray(post.savedBy)) {
+            post.savedBy = [];
+        }
+
         const isSaved = post.savedBy.includes(userId);
+
+        // Update the post's savedBy field
         if (isSaved) {
             post.savedBy = post.savedBy.filter((id) => id.toString() !== userId);
         } else {
             post.savedBy.push(userId);
         }
 
+        // Save the post document
         await post.save();
-        res.status(200).json(post);
+
+        // Update the user's savedPosts field
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // Ensure `savedPosts` is an array in the user document
+        if (!Array.isArray(user.savedPosts)) {
+            user.savedPosts = [];
+        }
+
+        // Add or remove the post ID from the savedPosts array
+        if (isSaved) {
+            user.savedPosts = user.savedPosts.filter(postId => postId.toString() !== id);
+        } else {
+            user.savedPosts.push(id);
+        }
+
+        // Save the updated user document
+        await user.save();
+
+        // Populate the saved posts for the user
+        const populatedUser = await userModel.findById(userId).populate('savedPosts');
+        
+        res.status(200).json({
+            message: isSaved ? "Post unsaved successfully" : "Post saved successfully",
+            post,
+            savedPosts: populatedUser.savedPosts // Return populated saved posts
+        });
     } catch (error) {
+        console.error('Error saving post:', error);
         res.status(500).json({ error: error.message });
     }
 };
+
+
 
 /// --- Comment Controllers ---
 export const addComment = async (req, res) => {
