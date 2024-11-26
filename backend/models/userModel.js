@@ -1,8 +1,7 @@
 import mongoose, { mongo } from "mongoose";
-
 const userSchema = new mongoose.Schema({
     username: {
-        type:String,
+        type: String,
         unique: true,
         sparse: true
     },
@@ -15,17 +14,16 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    password:{
+    password: {
         type: String,
-        // required: true,
     },
-    bio:{
-        type:String,
-        default:""
+    bio: {
+        type: String,
+        default: ""
     },
-    links:{
-        type:String,
-        default:""
+    links: {
+        type: String,
+        default: ""
     },
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -39,35 +37,36 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     }],
-    profileImg:{
+    profileImg: {
         type: String, 
         default: "https://vault-major-project.s3.ap-south-1.amazonaws.com/pfp.webp" 
     },
-    coverImg:{
-        type: String, // Store URL or path to image
+    coverImg: {
+        type: String, 
         default: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9ScG9XyZvoewIebmmIIFV__8YKDRfHHC3eA&s'
     },
     savedPosts: {
         type: Array,
         default: []
     },
-    blockedUsers:[{
+    blockedUsers: [{
         type: mongoose.Schema.Types.ObjectId,
-        default:[]
+        default: []
     }],
-    lastLogin:{
-        type:Date,
+    lastLogin: {
+        type: Date,
         default: Date.now()
     },
-    isVerified:{
+    isVerified: {
         type: Boolean,
         default: false,
     },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
-    verificationToken: String,
-    verificationTokenExpiresAt: Date,
+    verificationToken: [{
+        token: String,
+        expiresAt: Date
+    }],
 }, { timestamps: true });
 
-export const userModel = mongoose.model("User", userSchema)
-
+export const userModel = mongoose.model("User", userSchema);
