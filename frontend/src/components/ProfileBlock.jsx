@@ -5,7 +5,7 @@ import { TbMessage } from "react-icons/tb";
 import { useAuthStore } from '../store/authStore';
 import { useParams } from 'react-router-dom';
 
-function ProfileBlock({user}) {
+function ProfileBlock(displayedUser) {
   const { isLoading, error } = useAuthStore(state => state);
   const { userId } = useParams();  // Get userId from URL
   const followButtonData = {
@@ -14,7 +14,7 @@ function ProfileBlock({user}) {
     heading: 'Add friend',
     icon: <IoPersonAdd />
   }
-
+  const user = displayedUser.user;
   const messageButtonData = {
     color: 'bg-zinc-700',
     hoverColor: 'hover:bg-sky-500/90',

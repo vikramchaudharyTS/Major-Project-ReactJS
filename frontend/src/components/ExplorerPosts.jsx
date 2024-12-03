@@ -41,27 +41,29 @@ const ExplorerPosts = () => {
   
   useEffect(() => {
     // Async function to fetch posts from the backend
-    const fetchPosts = async () => {
-      try {
+   const fetchPosts = async () => {
+    try {
         const response = await axiosInstance.get('/posts/explorer/posts');
-        
-        const posts = await response.data;
+        const posts = response.data;
 
-        // Extract the image URLs from the posts
+        // Filter out posts with null userId
+        const validPosts = posts.filter((post) => post.userId && post.userId.name);
+
         const imagesWithHeights = await Promise.all(
-          posts.map(async (post) => ({
-            name: post.userId.name,
-            img: post.images[0], // Assuming we just need the first image
-            height: await getImageHeight(post.images[0]), // Get the height of the image
-          }))
+            validPosts.map(async (post) => ({
+                name: post.userId.name,
+                img: post.images[0], // Assuming we just need the first image
+                height: await getImageHeight(post.images[0]), // Get the height of the image
+            }))
         );
 
         setImages(imagesWithHeights); // Store images in state
         setLayout(calculateLayout(imagesWithHeights)); // Calculate layout based on image heights
-      } catch (error) {
+    } catch (error) {
         console.error('Error fetching posts:', error);
-      }
-    };
+    }
+};
+
 
     fetchPosts();
   }, []);

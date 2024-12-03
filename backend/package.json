@@ -76,6 +76,7 @@
     "iconv-lite": "^0.4.24",
     "inflight": "^1.0.6",
     "inherits": "^2.0.4",
+    "ioredis": "^5.4.1",
     "ipaddr.js": "^1.9.1",
     "is-fullwidth-code-point": "^3.0.0",
     "isarray": "^1.0.0",

@@ -171,8 +171,6 @@ export const getPostsFromNonFollowedUsers = async (req, res) => {
 };
 
 
-
-
 export const likePost = async (req, res) => {
     try {
         const { id } = req.params; // Post ID
