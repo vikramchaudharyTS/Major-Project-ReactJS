@@ -171,29 +171,6 @@ export const useAuthStore = create((set) => ({
             set({ error: "Error toggling follow status", isTogglingFollowStatus: false });
         }
     },
-    // fetchUserData: async () => {
-    //     if (!useAuthStore.getState().user) {
-    //         set({ isLoading: true, error: null });
-    //         try {
-    //             const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile`);
-    //             set({ user: response.data.user, isAuthenticated: true, isLoading: false });
-    //         } catch (error) {
-    //             console.error("Error fetchingUserData:", error);
-    //             set({ error: 'Error fetching user data', isLoading: false });
-    //         }
-    //     }
-    // },
-    // fetchAnotherUserData: async (userId) => {
-    //     if (!userId) return;  // Check if userId exists
-    //     set({ isLoading: true, error: null });
-    //     try {
-    //         const response = await axiosInstance.get(`${API_USER_ACTIONS_URL}/profile/${userId}`);  // Use the userId in the request
-    //         set({ anotherUser: response.data, isLoading: false });
-    //     } catch (error) {
-    //         console.error("Error fetchingAnotherUserData:", error);
-    //         set({ error: 'Error fetching user data', isLoading: false });
-    //     }
-    // },
 
     fetchUserData: async () => {
         if (!useAuthStore.getState().user) {
