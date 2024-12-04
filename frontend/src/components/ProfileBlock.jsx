@@ -5,7 +5,11 @@ import { TbMessage } from "react-icons/tb";
 import { useAuthStore } from '../store/authStore';
 import { useParams } from 'react-router-dom';
 
+<<<<<<< HEAD
 function ProfileBlock(displayedUser) {
+=======
+function ProfileBlock({user}) {
+>>>>>>> c926153dda1e39373ff5a8080aced0043432b4ec
   const { isLoading, error } = useAuthStore(state => state);
   const { userId } = useParams();  // Get userId from URL
   const followButtonData = {
@@ -14,7 +18,11 @@ function ProfileBlock(displayedUser) {
     heading: 'Add friend',
     icon: <IoPersonAdd />
   }
+<<<<<<< HEAD
   const user = displayedUser.user;
+=======
+
+>>>>>>> c926153dda1e39373ff5a8080aced0043432b4ec
   const messageButtonData = {
     color: 'bg-zinc-700',
     hoverColor: 'hover:bg-sky-500/90',
@@ -25,8 +33,12 @@ function ProfileBlock(displayedUser) {
 
   const maxChars = 200;
   const truncatedText = text.length > maxChars ? text.substring(0, maxChars) + "..." : text;
+<<<<<<< HEAD
   console.log(user);
   if(!user) return <h1>No user found</h1>
+=======
+
+>>>>>>> c926153dda1e39373ff5a8080aced0043432b4ec
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

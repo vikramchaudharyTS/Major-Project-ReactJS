@@ -76,6 +76,10 @@ export const signup = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> c926153dda1e39373ff5a8080aced0043432b4ec
 export const verifyEmail = async (req, res) => {
     const { code } = req.body;
     try {
