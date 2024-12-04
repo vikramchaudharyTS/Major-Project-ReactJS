@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 
 const Layout = () => {
     return (
-        <div className='flex h-full overflow-hidden'>
+        <div className='flex h-full overflow-hidden selection:bg-blue-600 selection:text-white'>
             {/* Sidebar */}
             <div className='w-[13%] py-2 h-screen'>
                 <Sidebar />

@@ -1,20 +1,21 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"; // Import from v3
-import { v4 as uuidv4 } from 'uuid';
-import multer from 'multer';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"; 
+import { v4 as uuidv4 } from "uuid";
+import multer from "multer";
+import sharp from "sharp"; // Import sharp
 
 // Configure multer storage
-const storage = multer.memoryStorage(); 
+const storage = multer.memoryStorage();
 export const upload = multer({
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }, // Example: Limit file size to 10 MB
     fileFilter: (req, file, cb) => {
         const allowedMimeTypes = ["image/jpeg", "image/png"];
         if (!allowedMimeTypes.includes(file.mimetype)) {
-            return cb(new Error("Only JPEG, and PNG images are allowed"), false);
+            return cb(new Error("Only JPEG and PNG images are allowed"), false);
         }
         cb(null, true);
     },
-}).array("images", 3); 
+}).array("images", 3);
 
 // Create S3 client for SDK v3
 const s3 = new S3Client({
@@ -26,24 +27,37 @@ const s3 = new S3Client({
 });
 
 /**
- * Uploads an image file to S3 and returns its URL.
+ * Compresses an image using Sharp.
+ * @param {Buffer} buffer - The image buffer.
+ * @returns {Promise<Buffer>} - The compressed buffer.
+ */
+const sharpCompress = (buffer) => {
+    return sharp(buffer)
+        .resize(500) // Resize the image (optional, set based on your requirement)
+        .toBuffer(); // Return the compressed image buffer
+};
+
+/**
+ * Uploads a compressed image file to S3 and returns its URL.
  * @param {Object} file - The image file object (e.g., from Multer).
  * @returns {Promise<string>} - The URL of the uploaded image.
  */
 export const uploadImageToS3 = async (file) => {
     const fileKey = `${uuidv4()}-${file.originalname}`;
 
-    const params = {
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: fileKey,
-        Body: file.buffer,
-        ContentType: file.mimetype,
-       
-    };
-
     try {
+        // Compress the file buffer with Sharp
+        const compressedBuffer = await sharpCompress(file.buffer);
+
+        const params = {
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: fileKey,
+            Body: compressedBuffer, // Use the compressed buffer
+            ContentType: file.mimetype,
+        };
+
         const command = new PutObjectCommand(params); // Create a new PutObjectCommand
-        const data = await s3.send(command); // Use the send method to upload the file
+        await s3.send(command); // Use the send method to upload the file
         return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
     } catch (err) {
         console.error("Error uploading to S3:", err);
@@ -70,5 +84,3 @@ export const deleteImageFromS3 = async (imageUrl) => {
         throw new Error("Failed to delete image from S3");
     }
 };
-
-    
