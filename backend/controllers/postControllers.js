@@ -110,7 +110,7 @@ export const getPostForFeed = async (req, res) => {
         // Fetch posts of the logged-in user and the users they follow
         const posts = await postModel
             .find({ userId: { $in: followedUserIds } })
-            .populate("userId", "username name profileImg").sort({createdAt:-1});
+            .populate("userId", "username name profileImg").sort({ createdAt: -1 });
 
         if (!posts.length) {
             return res.status(404).json({ message: "No posts found for this user and their follows" });
@@ -255,7 +255,7 @@ export const savePost = async (req, res) => {
 
         // Populate the saved posts for the user
         const populatedUser = await userModel.findById(userId).populate('savedPosts');
-        
+
         res.status(200).json({
             message: isSaved ? "Post unsaved successfully" : "Post saved successfully",
             post,
@@ -266,8 +266,6 @@ export const savePost = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
-
 
 /// --- Comment Controllers ---
 export const addComment = async (req, res) => {
@@ -328,7 +326,7 @@ export const likeComment = async (req, res) => {
             const newNotification = new notificationModel({
                 type: "like_comment",
                 from: userId,
-                modelType:"Comment",
+                modelType: "Comment",
                 to: comment.userId._id,
                 targetId: comment._id,
             });
@@ -363,7 +361,7 @@ export const replyToComment = async (req, res) => {
         const newNotification = new notificationModel({
             type: "reply_comment",
             from: userId,
-            modelType:"Comment",
+            modelType: "Comment",
             to: comment.userId._id,
             targetId: comment._id,
             content: replyText,

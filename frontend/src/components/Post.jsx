@@ -13,7 +13,6 @@ const Posts = () => {
   
   useEffect(() => {
     const fetchPosts = async () => {
-      console.log(user);
       try {
         const response = await axiosInstance.get(`/posts/${user._id}`);
         setPosts(response.data);
@@ -57,6 +56,7 @@ const Posts = () => {
   };
 
   const handleDeletePost = async (postId) => {
+    console.log(postId);
     const confirmed = window.confirm("Are you sure you want to delete this post?");
     if (confirmed) {
       try {
