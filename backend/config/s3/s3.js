@@ -38,9 +38,9 @@ const sharpCompress = (buffer) => {
 };
 
 /**
- * Uploads a compressed image file to S3 and returns its URL.
+ * Uploads a compressed image file to S3 and returns its CloudFront URL.
  * @param {Object} file - The image file object (e.g., from Multer).
- * @returns {Promise<string>} - The URL of the uploaded image.
+ * @returns {Promise<string>} - The CloudFront URL of the uploaded image.
  */
 export const uploadImageToS3 = async (file) => {
     const fileKey = `${uuidv4()}-${file.originalname}`;
@@ -58,7 +58,11 @@ export const uploadImageToS3 = async (file) => {
 
         const command = new PutObjectCommand(params); // Create a new PutObjectCommand
         await s3.send(command); // Use the send method to upload the file
-        return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+        
+        // Return the CloudFront URL instead of the S3 URL
+        return `https://${process.env.CLOUDFRONT_DOMAIN}/${fileKey}`;
+        // return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileKey}`;
+
     } catch (err) {
         console.error("Error uploading to S3:", err);
         throw new Error("Failed to upload image to S3");
@@ -84,3 +88,20 @@ export const deleteImageFromS3 = async (imageUrl) => {
         throw new Error("Failed to delete image from S3");
     }
 };
+
+
+/***
+ * 
+ * 
+ * {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::vault-major-project/*"
+        }
+    ]
+}
+ */

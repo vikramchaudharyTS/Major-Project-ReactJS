@@ -6,7 +6,7 @@ import { useAuthStore } from '../store/authStore';
 import { useParams } from 'react-router-dom';
 
 function ProfileBlock(displayedUser) {
-  const { isLoading, error } = useAuthStore(state => state);
+  const { error } = useAuthStore(state => state);
   const { userId } = useParams();  // Get userId from URL
   const followButtonData = {
     color: 'bg-green-500',
@@ -21,14 +21,13 @@ function ProfileBlock(displayedUser) {
     heading: 'Message',
     icon: <TbMessage />
   }
-  const text = user?.bio || "no bio yet";
+  // const text = user?.bio || "no bio yet";
 
-  const maxChars = 200;
-  const truncatedText = text.length > maxChars ? text.substring(0, maxChars) + "..." : text;
-  console.log(user);
+  // const maxChars = 200;
+  // const truncatedText = text.length > maxChars ? text.substring(0, maxChars) + "..." : text;
   if(!user) return <h1>No user found</h1>
 
-  if (isLoading) return <div>Loading...</div>;
+  // if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (

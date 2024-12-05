@@ -13,6 +13,7 @@ const Posts = () => {
   
   useEffect(() => {
     const fetchPosts = async () => {
+      console.log(user);
       try {
         const response = await axiosInstance.get(`/posts/${user._id}`);
         setPosts(response.data);
@@ -76,12 +77,12 @@ const Posts = () => {
           {/* Post Header */}
           <div className="flex items-center p-4">
             <img
-              src={post.userId.profileImg || "https://via.placeholder.com/50"}
-              alt={post.userId.name}
+              src={user.profileImg || "https://via.placeholder.com/50"}
+              alt={user.username}
               className="cursor-pointer w-10 h-10 rounded-full mr-3"
             />
             <div className="flex-grow">
-              <span className="font-semibold cursor-pointer">{post.userId.name}</span>
+              <span className="font-semibold cursor-pointer">{user.username}</span>
               <span className="text-gray-500 text-sm ml-2">
                 {new Date(post.createdAt).toLocaleString()}
               </span>

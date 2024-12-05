@@ -5,11 +5,14 @@ export const usePostStore = create((set) => ({
   savedPosts: {}, // Track saved status for each post
   loading: true,
   error: null,
+
+
   setPosts: (posts) => set({ posts }),
   // Add post function
   addPost: (newPost) => set((state) => ({
-    posts: [...state.posts, newPost],
+    posts: [newPost, ...state.posts], // Add new post to the beginning
   })),
+
   // Update post function
   updatePost: (updatedPost) => set((state) => ({
     posts: state.posts.map((post) =>

@@ -5,7 +5,7 @@ import { useAuthStore } from '../store/authStore';
 import { useParams } from 'react-router-dom';
 
 function ProfilePage() {
-  const { user, anotherUser, fetchAnotherUserData, isLoading, error } = useAuthStore();
+  const { user, anotherUser, fetchAnotherUserData, error } = useAuthStore();
   const { userId } = useParams();
 
   // Fetch user data based on route
@@ -18,7 +18,7 @@ function ProfilePage() {
   // Determine which user data to display
   const displayedUser = userId ? anotherUser : user;
 
-  if (isLoading) return <div>Loading...</div>;
+  // if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
