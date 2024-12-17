@@ -27,10 +27,13 @@ const calculateLayout = (images) => {
 
 // Function to get the image height from a URL
 const getImageHeight = async (url) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(img.height);
-    img.onerror = reject; // Handle errors
+    img.onerror = (error) => {
+      console.error(`Error loading image at URL: ${url}`, error);
+      resolve(0); // Return a default height if the image fails to load
+    };
     img.src = url;
   });
 };
@@ -41,29 +44,36 @@ const ExplorerPosts = () => {
   
   useEffect(() => {
     // Async function to fetch posts from the backend
-   const fetchPosts = async () => {
-    try {
+    const fetchPosts = async () => {
+      try {
         const response = await axiosInstance.get('/posts/explorer/posts');
         const posts = response.data;
-
-        // Filter out posts with null userId
-        const validPosts = posts.filter((post) => post.userId && post.userId.name);
-
-        const imagesWithHeights = await Promise.all(
-            validPosts.map(async (post) => ({
-                name: post.userId.name,
-                img: post.images[0], // Assuming we just need the first image
-                height: await getImageHeight(post.images[0]), // Get the height of the image
-            }))
+    
+        const validPosts = posts.filter((post) => 
+          post.userId && 
+          post.userId.name && 
+          post.images[0] && 
+          post.images[0].startsWith('http')
         );
-
-        setImages(imagesWithHeights); // Store images in state
-        setLayout(calculateLayout(imagesWithHeights)); // Calculate layout based on image heights
-    } catch (error) {
+    
+        const imagesWithHeights = await Promise.all(
+          validPosts.map(async (post) => {
+            const imageHeight = await getImageHeight(post.images[0]);
+            return {
+              name: post.userId.name,
+              img: post.images[0],
+              height: imageHeight || 200, // Default height if loading fails
+            };
+          })
+        );
+    
+        setImages(imagesWithHeights);
+        setLayout(calculateLayout(imagesWithHeights));
+      } catch (error) {
         console.error('Error fetching posts:', error);
-    }
-};
-
+      }
+    };
+    
 
     fetchPosts();
   }, []);

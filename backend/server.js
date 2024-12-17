@@ -17,8 +17,11 @@ dotenv.config();
 
 // Middleware
 app.use(cors({
+    // origin: "https://d2xjd5m4n8lp4s.cloudfront.net",
     origin: "http://localhost:5173",
-    credentials: true
+    credentials: true,
+    // methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed methods
+    // allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
 
 app.use(express.json());

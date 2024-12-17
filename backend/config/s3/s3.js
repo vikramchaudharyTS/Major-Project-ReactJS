@@ -75,19 +75,26 @@ export const uploadImageToS3 = async (file) => {
  * @returns {Promise<void>}
  */
 export const deleteImageFromS3 = async (imageUrl) => {
+    const key = imageUrl.replace(`https://${process.env.S3_BUCKET_NAME}.s3.amazonaws.com/`, '');
+    
+    // Log the extracted key for debugging purposes
+    console.log("Deleting image with key:", key);
+
     const params = {
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: imageUrl.split(".com/")[1], // Extract the S3 key from the URL
+        Key: key, // Correctly extracted S3 key
     };
 
     try {
         const command = new DeleteObjectCommand(params); // Create a new DeleteObjectCommand
         await s3.send(command); // Use the send method to delete the image
+        console.log("Image deleted successfully");
     } catch (err) {
         console.error("Error deleting from S3:", err);
         throw new Error("Failed to delete image from S3");
     }
 };
+
 
 
 /***

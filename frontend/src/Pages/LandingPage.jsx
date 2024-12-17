@@ -51,10 +51,10 @@ function LandingPage() {
 
   {/* Welcome Message */}
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 0 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.5 }}
-    className="flex flex-col items-center justify-center h-96"
+    className="flex flex-col items-center gap-10 mt-60 justify-center h-96"
   >
     <h1 className="text-7xl text-transparent bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text font-extrabold mb-4 text-center">
       Welcome to <strong>Vault</strong>
@@ -63,6 +63,14 @@ function LandingPage() {
       We don't offer you privacy
     </h2>
     <h3 className="text-xl text-gray-400 text-center">It's your Right!</h3>
+    <div className="w-[40%]">
+  <img
+    src="https://plus.unsplash.com/premium_photo-1676618539992-21c7d3b6df0f?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    alt=""
+    className="transform rotate-1 mx-auto"
+  />
+</div>
+
   </motion.div>
 </motion.div>
 
