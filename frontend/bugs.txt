@@ -1,0 +1,8 @@
+1. profilePFP blocked - A resource is blocked by OpaqueResponseBlocking, please check browser console for details.
+   So does CoverPFP
+
+2. Deleted image won't delete from S3.
+
+3. Sees imageId when likes a image.
+
+4. 

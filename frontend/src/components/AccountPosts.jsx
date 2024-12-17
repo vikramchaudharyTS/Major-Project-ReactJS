@@ -7,7 +7,7 @@ function AccountPosts({ userId }) {
 
 
   //   // Reset posts to an empty array whenever the component is unmounted or userId changes
-    
+
   // }, [userId, setPosts]);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ function AccountPosts({ userId }) {
         // Fetch posts based on whether userId is provided
         const endpoint = userId ? `/users/profile/${userId}` : '/users/profile';
         const response = await axiosInstance.get(endpoint);
-        
+
         // Check if response contains posts, then set them
         if (response.data && response.data.posts) {
           setPosts(response.data.posts); // Assuming the posts are returned in `response.data.posts`
@@ -47,18 +47,18 @@ function AccountPosts({ userId }) {
   if (error) {
     return <div className="text-center text-lg text-red-500">{error}</div>;
   }
-
-  if (posts.length === 0) {
+  
+  // Check if posts is an array and has content
+  if (!Array.isArray(posts) || posts.length === 0) {
     return (
       <div className="w-full text-center text-xl text-gray-500">
         No posts available
       </div>
     );
   }
-
   return (
     <div className="grid grid-cols-3 gap-4 p-4">
-      {posts.map((post,index) => (
+      {posts.map((post, index) => (
         <div
           key={index}
           className="hover:scale-105 transition transform rounded overflow-hidden shadow-lg"

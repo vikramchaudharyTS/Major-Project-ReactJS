@@ -6,11 +6,14 @@ import { AiOutlineMessage } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 import { useAuthStore } from "../store/authStore.js";
 import { usePostStore } from "../store/postsStore.js";
+import { useNavigate } from "react-router-dom";
 
 const Posts = () => {
   const { user } = useAuthStore();
   const { posts, setPosts, removePost, savedPosts, toggleSavedPost } = usePostStore();
+  const navigate = useNavigate()
   
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -68,6 +71,10 @@ const Posts = () => {
     }
   };
 
+  const handleUserClick = (userId) => {
+    navigate(`/profile/${userId}`);
+  };
+
   if (!posts.length) return <div className="text-gray-400">No posts to display.</div>;
 
   return (
@@ -81,7 +88,7 @@ const Posts = () => {
               className="cursor-pointer w-10 h-10 rounded-full mr-3"
             />
             <div className="flex-grow">
-              <span className="font-semibold cursor-pointer">{post.userId.username}</span>
+              <span onClick={()=>handleUserClick(post.userId._id)} className="font-semibold cursor-pointer">{post.userId.username}</span>
               <span className="text-gray-500 text-sm ml-2">
                 {new Date(post.createdAt).toLocaleString()}
               </span>

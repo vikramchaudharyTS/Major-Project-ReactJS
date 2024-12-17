@@ -113,7 +113,7 @@ export const getPostForFeed = async (req, res) => {
             .populate("userId", "username name profileImg").sort({ createdAt: -1 });
 
         if (!posts.length) {
-            return res.status(404).json({ message: "No posts found for this user and their follows" });
+            return res.status(200).json({ message: "No posts found for this user and their follows" });
         }
 
         // Optionally, format the data if needed
@@ -160,7 +160,7 @@ export const getPostsFromNonFollowedUsers = async (req, res) => {
             .sort({ createdAt: -1 }); // Sort by newest posts
 
         if (remainingPosts.length === 0) {
-            return res.status(404).json({ message: "No posts found from non-followed users" });
+            return res.status(200).json({ message: "No posts found from non-followed users" });
         }
 
         res.status(200).json(remainingPosts);

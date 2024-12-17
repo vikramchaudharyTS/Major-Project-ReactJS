@@ -39,11 +39,11 @@ const userSchema = new mongoose.Schema({
     }],
     profileImg: {
         type: String, 
-        default: "https://vault-major-project.s3.ap-south-1.amazonaws.com/pfp.webp" 
+        default: "https://vault-major-project.s3.ap-south-1.amazonaws.com/profilePFPpng.png" 
     },
     coverImg: {
         type: String, 
-        default: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9ScG9XyZvoewIebmmIIFV__8YKDRfHHC3eA&s'
+        default: 'https://vault-major-project.s3.ap-south-1.amazonaws.com/coverPFPjpg.jpg'
     },
     savedPosts: {
         type: Array,

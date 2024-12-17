@@ -24,17 +24,17 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!description || !image) {
       alert("Please add a description and an image!");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("description", description);
     formData.append("images", image);
     formData.append("isPublic", true);
-
+  
     try {
       setIsLoading(true);
       const response = await axiosInstance.post("/posts/create", formData, {
@@ -42,21 +42,27 @@ const CreatePost = ({ isCreatePostActive, setIsCreatePostActive }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Post created:", response.data);
-
-      addPost(response.data);
-
-      setDescription('');
-      setImage(null);
-      setPreviewImage(null); // Reset preview
-      setIsCreatePostActive(false);
+      console.log("Response data:", response.data);
+      console.log("Response status:", response.status);
+      
+      if (response.status === 201 || response.status === 200) {
+        addPost(response.data); // Add the new post to the store
+        setDescription("");
+        setImage(null);
+        setPreviewImage(null);
+        setIsCreatePostActive(false);
+      } else {
+        alert("Unexpected response from server. Post creation may not be successful.");
+      }
     } catch (error) {
-      console.error("Error creating post:", error);
+      console.error("Error creating post:", error.response || error.message);
       alert("Failed to create post. Please try again.");
     } finally {
       setIsLoading(false);
     }
+    
   };
+  
 
   return (
     <div className="fixed inset-0 bg-zinc-900 backdrop-blur-md bg-opacity-45 flex justify-center items-center z-[55] text-white">

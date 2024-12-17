@@ -12,8 +12,7 @@ function NotificationCall({ notificationCallData }) {
           <div className="w-[20%]">
             <img
               className="w-10 h-10 object-cover rounded-full object-top"
-              src={notification.from.profileImg || "/default-avatar.png"} // Fallback to default avatar
-              alt={`avatar's pf`}
+              src={notification.from.profileImg} // Fallback to default avatar
             />
           </div>
           {/* Notification message */}
