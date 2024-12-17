@@ -20,13 +20,7 @@ const Register = () => {
 
 		try {
 			await signup(email, password, name);
-<<<<<<< HEAD
-			// navigate("/verify-email");
-			navigate("/signup");
-			
-=======
 			navigate("/verify-email");
->>>>>>> c926153dda1e39373ff5a8080aced0043432b4ec
 		} catch (error) {
 			console.log(error.message);
 		}

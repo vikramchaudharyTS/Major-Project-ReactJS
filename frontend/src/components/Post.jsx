@@ -69,6 +69,7 @@ const Posts = () => {
   };
 
   if (!posts.length) return <div className="text-gray-400">No posts to display.</div>;
+  console.log(posts);
 
   return (
     <div className="space-y-4">
@@ -77,12 +78,11 @@ const Posts = () => {
           {/* Post Header */}
           <div className="flex items-center p-4">
             <img
-              src={user.profileImg || "https://via.placeholder.com/50"}
-              alt={user.username}
+              src={post.userId.profileImg || "https://via.placeholder.com/50"}
               className="cursor-pointer w-10 h-10 rounded-full mr-3"
             />
             <div className="flex-grow">
-              <span className="font-semibold cursor-pointer">{user.username}</span>
+              <span className="font-semibold cursor-pointer">{post.userId.username}</span>
               <span className="text-gray-500 text-sm ml-2">
                 {new Date(post.createdAt).toLocaleString()}
               </span>

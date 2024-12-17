@@ -13,7 +13,7 @@ export const usePostStore = create((set) => ({
   addPost: (newPost) => set((state) => ({
     posts: [newPost, ...state.posts], // Add new post to the beginning
   })),
-
+  
   // Update post function
   updatePost: (updatedPost) => set((state) => ({
     posts: state.posts.map((post) =>
