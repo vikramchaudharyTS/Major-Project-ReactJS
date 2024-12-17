@@ -25,6 +25,9 @@ function ProfileBlock(displayedUser) {
 
   // const maxChars = 200;
   // const truncatedText = text.length > maxChars ? text.substring(0, maxChars) + "..." : text;
+  const maxChars = 200;
+  const truncatedText = text.length > maxChars ? text.substring(0, maxChars) + "..." : text;
+  console.log(user);
   if(!user) return <h1>No user found</h1>
 
   // if (isLoading) return <div>Loading...</div>;

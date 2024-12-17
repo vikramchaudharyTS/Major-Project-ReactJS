@@ -171,6 +171,11 @@ export const getPostsFromNonFollowedUsers = async (req, res) => {
 };
 
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> c926153dda1e39373ff5a8080aced0043432b4ec
 export const likePost = async (req, res) => {
     try {
         const { id } = req.params; // Post ID

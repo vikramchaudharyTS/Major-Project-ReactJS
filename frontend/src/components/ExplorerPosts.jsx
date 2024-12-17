@@ -73,7 +73,6 @@ const ExplorerPosts = () => {
         console.error('Error fetching posts:', error);
       }
     };
-    
 
     fetchPosts();
   }, []);

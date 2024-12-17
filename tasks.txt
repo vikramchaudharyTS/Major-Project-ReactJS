@@ -1,0 +1,152 @@
+1. User Service
+1.1. Registration:
+
+    API: POST /api/register
+    Functionality:
+        Create a new user account.
+        Store user details like username, email, password (hashed), profile picture, bio, etc.
+        Send a verification email (optional).
+        Basic validation (e.g., check for existing email).
+
+1.2. Login:
+
+    API: POST /api/login
+    Functionality:
+        Authenticate user using email/username and password.
+        Issue JSON Web Token (JWT) for session management.
+        Validate credentials, and implement login rate limiting to prevent brute force attacks.
+
+1.3. Follow/Unfollow:
+
+    API: POST /api/follow/:userId
+    API: POST /api/unfollow/:userId
+    Functionality:
+        Allow users to follow or unfollow other users.
+        Update follower and following counts.
+        Optionally send notifications when someone follows a user.
+
+1.4. User Profile:
+
+    API: GET /api/user/:userId
+    Functionality:
+        Fetch user profile details (username, bio, profile picture, posts, followers, etc.).
+        Optionally show whether the requesting user is following the profile user.
+
+2. Message Service
+2.1. Send Message:
+
+    API: POST /api/messages/send
+    Functionality:
+        Allow users to send direct messages (DMs) to other users.
+        Store the message in the database.
+        Update message threads for both sender and receiver.
+        Real-time delivery via WebSocket or other protocols.
+
+2.2. Fetch Message Threads:
+
+    API: GET /api/messages/:userId
+    Functionality:
+        Retrieve the conversation history between two users.
+        Support pagination to handle large message histories.
+
+2.3. Real-Time Messaging:
+
+    API: WebSocket /ws/messages
+    Functionality:
+        Enable real-time messaging using WebSocket, allowing users to receive messages instantly without reloading the page.
+
+3. Post Service
+3.1. Create Post:
+
+    API: POST /api/posts/create
+    Functionality:
+        Allow users to create posts with images, text, or videos.
+        Store post metadata (user ID, timestamp, likes, comments).
+        Optionally use an image moderation service for inappropriate content detection.
+
+3.2. Fetch Posts:
+
+    API: GET /api/posts/feed
+    Functionality:
+        Fetch the feed of posts from the users a person follows.
+        Support pagination, filtering, and sorting (e.g., by most recent).
+
+3.3. Like/Unlike Post:
+
+    API: POST /api/posts/:postId/like
+    API: POST /api/posts/:postId/unlike
+    Functionality:
+        Enable users to like/unlike posts.
+        Update the like count for the post.
+
+3.4. Comment on Post:
+
+    API: POST /api/posts/:postId/comment
+    Functionality:
+        Allow users to comment on posts.
+        Store comments with metadata (user ID, timestamp, post ID).
+        Optionally notify the post owner when a comment is made.
+
+3.5. Delete Post:
+
+    API: DELETE /api/posts/:postId
+    Functionality:
+        Allow users to delete their own posts.
+        Remove the post and all associated comments and likes.
+
+4. Notification Service
+4.1. Follow Notifications:
+
+    API: GET /api/notifications/follows
+    Functionality:
+        Notify users when they are followed by someone.
+        Fetch the list of follow-related notifications.
+
+4.2. Post Notifications:
+
+    API: GET /api/notifications/posts
+    Functionality:
+        Notify users when their post is liked, commented on, or shared.
+        Fetch a list of post-related notifications.
+
+5. Search Service
+5.1. Search Users:
+
+    API: GET /api/search/users?query=
+    Functionality:
+        Allow users to search for other users by username or name.
+        Implement search filtering and fuzzy matching.
+
+5.2. Search Posts:
+
+    API: GET /api/search/posts?query=
+    Functionality:
+        Allow users to search posts based on keywords, hashtags, or content.
+
+6. Friendship/Relationship Service (Optional)
+6.1. Send Friend Request:
+
+    API: POST /api/friends/request/:userId
+    Functionality:
+        Allow users to send friend requests.
+        Track pending friend requests.
+
+6.2. Accept/Reject Friend Request:
+
+    API: POST /api/friends/accept/:userId
+    API: POST /api/friends/reject/:userId
+    Functionality:
+        Enable users to accept or reject friend requests.
+
+7. Admin Service (Optional)
+7.1. User Management:
+
+    API: POST /api/admin/user/ban/:userId
+    Functionality:
+        Allow admins to ban or unban users for violating terms.
+
+7.2. Post Moderation:
+
+    API: DELETE /api/admin/post/remove/:postId
+    Functionality:
+        Enable admins to remove posts reported as inappropriate or abusive.

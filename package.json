@@ -8,8 +8,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+<<<<<<< HEAD
   "description": "",
   "dependencies": {
     "dotenv": "^16.4.5"
   }
+=======
+  "description": ""
+>>>>>>> c926153dda1e39373ff5a8080aced0043432b4ec
 }
