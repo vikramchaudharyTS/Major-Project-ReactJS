@@ -21,7 +21,7 @@ function ProfileBlock(displayedUser) {
     heading: 'Message',
     icon: <TbMessage />
   }
-  // const text = user?.bio || "no bio yet";
+  const text = user?.bio || "no bio yet";
 
   // const maxChars = 200;
   // const truncatedText = text.length > maxChars ? text.substring(0, maxChars) + "..." : text;

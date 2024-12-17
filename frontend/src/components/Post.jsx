@@ -69,7 +69,6 @@ const Posts = () => {
   };
 
   if (!posts.length) return <div className="text-gray-400">No posts to display.</div>;
-  console.log(posts);
 
   return (
     <div className="space-y-4">

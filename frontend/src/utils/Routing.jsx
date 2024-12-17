@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import LandingPage from '../Pages/LandingPage';
 import Settings from '../Pages/Settings';
 import Messages from '../Pages/Messages';
-import Notification from '../Pages/Notification';
+import Notification from '../Pages/NotificationPage';
 import ProfilePage from '../Pages/ProfilePage';
 import Explorer from '../Pages/Explorer';
 import Layout from '../layouts/Layout'; 
