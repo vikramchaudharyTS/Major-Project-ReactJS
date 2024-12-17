@@ -4,8 +4,10 @@ import React from 'react';
 import FloatingShape from './components/FloatingShape';
 import Routing from './utils/Routing.jsx';
 import { Toaster } from 'react-hot-toast';
+import useKeyboardNavigation from './utils/useKeyboardNavigation.jsx';
 
 function App() {
+  useKeyboardNavigation()
   return (
     <>
       {/* <div className='relative overflow-hidden'>
