@@ -9,7 +9,7 @@ import FollowersUnfollowers from '../components/profilePageComponents/FollowersU
 function ProfilePage() {
   const { user, anotherUser, fetchAnotherUserData, error } = useAuthStore();
   const { userId } = useParams();
-  const {oneBlock, setOneBlock} = useState(false)
+  const [oneBlock, setOneBlock] = useState(false)
 
   // Fetch user data based on route
   useEffect(() => {
@@ -31,7 +31,7 @@ function ProfilePage() {
           <div className="bg-zinc-800/20 w-[80vw] h-[88%] mt-24 flex-1 flex overflow-hidden rounded-lg">
             {/* Profile block */}
             <div className="w-[30%] h-full">
-              <ProfileBlock user={displayedUser} setOneBlock={setOneBlock} />
+              <ProfileBlock user={displayedUser} setOneBlock={setOneBlock} oneBlock={oneBlock} />
             </div>
             {/* Posts block */}
             <div className="overflow-y-scroll w-[70%] flex flex-wrap gap-14 p-10 items-start justify-start min-h-[calc(100vh-96px)]">
