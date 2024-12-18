@@ -26,7 +26,7 @@ const Posts = () => {
     if (user._id) {
       fetchPosts();
     }
-  }, [user._id, setPosts]);
+  }, [user._id, posts]);
 
   const handleLikePost = async (postId, post) => {
     try {

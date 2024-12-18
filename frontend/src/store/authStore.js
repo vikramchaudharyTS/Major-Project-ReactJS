@@ -37,7 +37,7 @@ export const useAuthStore = create((set) => ({
         // console.log("Logging in with:", email, password);  // Debugging line
         try {
             const response = await axiosInstance.post(`${API_AUTH_URL}/login`, { email, password });
-            console.log("Login response:", response.data.user);  // Debugging line
+            // console.log("Login response:", response.data.user);  // Debugging line
             set({ user: response.data.user, isAuthenticated: true, isLoading: false, error: null });
         } catch (error) {
             console.error("EF-F/authStore Login error:", error);  // Debugging line
