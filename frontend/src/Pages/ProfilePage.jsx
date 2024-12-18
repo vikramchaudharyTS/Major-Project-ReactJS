@@ -34,7 +34,7 @@ function ProfilePage() {
               <ProfileBlock user={displayedUser} setOneBlock={setOneBlock} oneBlock={oneBlock} />
             </div>
             {/* Posts block */}
-            <div className="overflow-y-scroll w-[70%] flex flex-wrap gap-14 p-10 items-start justify-start min-h-[calc(100vh-96px)]">
+            <div className="overflow-y-scroll w-[70%] bg-slate-500 flex flex-wrap gap-14 p-10 items-start justify-start min-h-[calc(100vh-96px)]">
               {oneBlock ? <AccountPosts userId={userId} /> : <FollowersUnfollowers />}
             </div>
           </div>

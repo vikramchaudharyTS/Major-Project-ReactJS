@@ -43,11 +43,11 @@ function ProfileBlock({user, setOneBlock, oneBlock}) {
       </div>
 
       <div className='cursor-pointer  flex justify-between w-[80%] mx-auto py-1'>
-        <div onClick={()=>setOneBlock(!oneBlock)} className='bg-fuchsia-300 flex flex-col items-center'>
+        <div onClick={()=>setOneBlock(!oneBlock)} className= 'flex flex-col items-center'>
           <h1>{user?.followers?.length}</h1>
           <h1 className='font-semibold'>Followers</h1>
         </div>
-        <div onClick={()=>setOneBlock(!oneBlock)} className='flex flex-col items-center bg-fuchsia-300 '>
+        <div onClick={()=>setOneBlock(!oneBlock)} className='flex flex-col items-center '>
           <h1>{user?.following?.length}</h1>
           <h1 className='font-semibold'>Followings</h1>
         </div>
