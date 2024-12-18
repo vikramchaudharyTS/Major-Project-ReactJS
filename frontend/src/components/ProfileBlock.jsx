@@ -5,7 +5,7 @@ import { TbMessage } from "react-icons/tb";
 import { useAuthStore } from '../store/authStore';
 import { useParams } from 'react-router-dom';
 
-function ProfileBlock(displayedUser) {
+function ProfileBlock({user, setOneBlock}) {
   const { error } = useAuthStore(state => state);
   const { userId } = useParams();  // Get userId from URL
   const followButtonData = {
@@ -14,7 +14,7 @@ function ProfileBlock(displayedUser) {
     heading: 'Add friend',
     icon: <IoPersonAdd />
   }
-  const user = displayedUser.user;
+  // const user = displayedUser.user;
   const messageButtonData = {
     color: 'bg-zinc-700',
     hoverColor: 'hover:bg-sky-500/90',
@@ -42,12 +42,12 @@ function ProfileBlock(displayedUser) {
         <img className='w-full h-full object-cover object-center' src={user?.profileImg} alt="Profile" />
       </div>
 
-      <div className='flex justify-between w-[80%] mx-auto py-1'>
-        <div className='flex flex-col items-center'>
+      <div className='cursor-pointer  flex justify-between w-[80%] mx-auto py-1'>
+        <div onClick={()=>setOneBlock(true)} className='bg-fuchsia-300 flex flex-col items-center'>
           <h1>{user?.followers?.length}</h1>
           <h1 className='font-semibold'>Followers</h1>
         </div>
-        <div className='flex flex-col items-center'>
+        <div onClick={()=>setOneBlock(true)} className='flex flex-col items-center bg-fuchsia-300 '>
           <h1>{user?.following?.length}</h1>
           <h1 className='font-semibold'>Followings</h1>
         </div>

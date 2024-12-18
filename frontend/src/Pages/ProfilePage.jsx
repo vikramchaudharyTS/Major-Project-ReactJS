@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
+//@ts-nocheck
+import React, { useEffect, useState } from 'react';
 import AccountPosts from '../components/AccountPosts';
 import ProfileBlock from '../components/ProfileBlock';
 import { useAuthStore } from '../store/authStore';
 import { useParams } from 'react-router-dom';
+import FollowersUnfollowers from '../components/profilePageComponents/FollowersUnfollowers.jsx';
 
 function ProfilePage() {
   const { user, anotherUser, fetchAnotherUserData, error } = useAuthStore();
   const { userId } = useParams();
+  const {oneBlock, setOneBlock} = useState(false)
 
   // Fetch user data based on route
   useEffect(() => {
@@ -28,11 +31,11 @@ function ProfilePage() {
           <div className="bg-zinc-800/20 w-[80vw] h-[88%] mt-24 flex-1 flex overflow-hidden rounded-lg">
             {/* Profile block */}
             <div className="w-[30%] h-full">
-              <ProfileBlock user={displayedUser} />
+              <ProfileBlock user={displayedUser} setOneBlock={setOneBlock} />
             </div>
             {/* Posts block */}
             <div className="overflow-y-scroll w-[70%] flex flex-wrap gap-14 p-10 items-start justify-start min-h-[calc(100vh-96px)]">
-              <AccountPosts userId={userId} />
+              {oneBlock ? <AccountPosts userId={userId} /> : <FollowersUnfollowers />}
             </div>
           </div>
         </div>
